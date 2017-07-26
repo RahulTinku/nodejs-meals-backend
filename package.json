@@ -1,0 +1,28 @@
+{
+  "name": "project-vignes-aruljothi",
+  "version": "1.0.0",
+  "description": "REST API for the input of calories",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "NODE_PATH=./src ava --watch --verbose --serial"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.toptal.com:Martin-Gouws/project-vignes-aruljothi.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "bunyan": "^1.8.10",
+    "json-schema-faker": "^0.4.3",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.11.4"
+  },
+  "devDependencies": {
+    "ava": "^0.21.0"
+  }
+}
