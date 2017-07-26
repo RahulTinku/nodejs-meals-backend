@@ -8,7 +8,7 @@ const nutritionix = new NutritionixClient({
 });
 
 const getCalories = (food) => nutritionix.natural(food).then((data) => {
-  return _.find(data.results[0].nutrients, {usda_tag: 'ENERC_KCAL' }).value || 0;
+  return parseInt(_.find(data.results[0].nutrients, {usda_tag: 'ENERC_KCAL' }).value || 0, 10);
 });
 
 module.exports = {
