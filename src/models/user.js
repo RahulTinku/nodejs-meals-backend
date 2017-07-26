@@ -1,5 +1,4 @@
 const Promise = require('bluebird');
-const mongoose = require('mongoose');
 
 class User {
   constructor(options) {
@@ -14,15 +13,15 @@ class User {
   }
 
   updateUser(userId, input) {
-    return this.model.findByIdAndUpdate({ _id: mongoose.Types.ObjectId(userId) }, { $set: input }, { new: true });
+    return this.model.findByIdAndUpdate(userId, { $set: input }, { new: true });
   }
 
   deleteUser(userId, input) {
-    return this.model.findByIdAndRemove({ _id: mongoose.Types.ObjectId(userId) });
+    return this.model.findByIdAndRemove(userId);
   }
 
   getUser(userId, input) {
-    return this.model.findById({ _id: mongoose.Types.ObjectId(userId) });
+    return this.model.findById(userId );
   }
 }
 
