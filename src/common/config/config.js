@@ -7,6 +7,7 @@ module.exports = {
     level: ''
   },
   secret: {
-    passwordSalt: '$2a$10$lvh1E1ZVePCsuLSN22jI3e'
+    passwordSalt: '$2a$10$lvh1E1ZVePCsuLSN22jI3e',
+    jwtSignature: 'devAppSecret'
   }
 };

@@ -12,6 +12,7 @@ let user;
 let mockData = jsf(schema.postSchema);
 let userSchema = mongooseSchema(schema.postSchema);
 let userId;
+let userHashPassword;
 
 test.before.cb('it creates a new database connection', (t) => {
   dbConnection = new Connection(config.database);
@@ -27,20 +28,18 @@ test.before.cb('it creates a new database connection', (t) => {
   });
 });
 
-test.cb.only('it creates a new user', (t) => {
+test.cb('it creates a new user', (t) => {
   user.createUser(_.omit(mockData, 'phone')).then((data) => {
     t.truthy(data.id);
     userId = data.id;
-    console.log(data)
     t.end();
   })
 });
 
-test.cb.only('it updates an user', (t) => {
+test.cb('it updates an user', (t) => {
   const newPhone = '+12 1234567890';
   user.updateUser(userId, { phone: newPhone }).then((data) => {
     t.is(data.phone, newPhone);
-    console.log(data)
     t.end();
   })
 });
@@ -59,10 +58,28 @@ test.cb('it queries an user', (t) => {
   })
 });
 
+test.cb('it encrypts password', (t) => {
+  userHashPassword = user.encryptPasswordString('123');
+  t.truthy(userHashPassword);
+  t.end();
+});
+
+test.cb('it compares and verify the password', (t) => {
+  const verifyPassword = user.verifyPassword('123', userHashPassword);
+  t.truthy(verifyPassword);
+  t.end();
+});
+
+test.cb('it verifies login credentials', (t) => {
+  user.verifyLogin(mockData.email, mockData.password).catch((err) => {
+    t.is(err.message, 'User Not Authorized');
+    t.end();
+  })
+});
+
 test.cb('it deletes an user', (t) => {
   user.deleteUser(userId).then((data) => {
     t.is(data.id, userId);
     t.end();
   })
 });
-

@@ -2,6 +2,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+const exceptions = require('common/exceptions');
 
 class User {
   constructor(options) {
@@ -12,12 +13,12 @@ class User {
   }
 
   createUser(input) {
-    const userInput = _.cloneDeep(input);
-    userInput.createdAt = new Date().toISOString();
-    userInput.updatedAt = new Date().toISOString();
-    userInput.password = this.encryptPasswordString(userInput.password);
-    const data = new this.model(userInput);
-    return data.save(data);
+    const data = _.cloneDeep(input);
+    data.createdAt = new Date().toISOString();
+    data.updatedAt = new Date().toISOString();
+    data.status = 'GUEST';
+    data.password = this.encryptPasswordString(data.password);
+    return (new this.model(data)).save();
   }
 
   updateUser(userId, input) {
@@ -43,8 +44,22 @@ class User {
   }
 
   encryptPasswordString(string) {
-    return bcrypt.hashSync(string, this.salt).replace(this.salt, '');
+    const hash = bcrypt.hashSync(string, this.salt);
+    return hash.replace(this.salt, '');
   };
+
+  verifyPassword(passwordToTest, actualPassword) {
+    return bcrypt.compareSync(passwordToTest, this.salt + actualPassword);
+  }
+
+  verifyLogin(email, password) {
+    return this.queryUser({ email }).then((data) => {
+      if(data.length === 0) throw new exceptions.NotFound();
+      if(!this.verifyPassword(password, data[0].password)) throw new exceptions.PasswordMismatch();
+      if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotAuthorized();
+      return true;
+    });
+  }
 }
 
 module.exports = User;
