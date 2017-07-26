@@ -5,5 +5,8 @@ module.exports = {
   },
   logger: {
     level: ''
+  },
+  secret: {
+    passwordSalt: '$2a$10$lvh1E1ZVePCsuLSN22jI3e'
   }
 };

@@ -9,8 +9,9 @@ const user = {
   lastName: { type: 'string', pattern: '^([a-zA-Z]+)$', },
   email: { type: 'string', format: 'email', 'm-unique': true },
   status: { type: 'string', enum: ['GUEST', 'BLOCKED', 'ACTIVE', 'INACTIVE'], },
-  createdAt: { type: 'string', format: 'date-time', 'm-default': Date.now },
-  updatedAt: { type: 'string', format: 'date-time', 'm-default': Date.now },
+  expectedCalories: { type: 'number', },
+  createdAt: { type: 'string', format: 'date-time', },
+  updatedAt: { type: 'string', format: 'date-time', },
 };
 
 const postSchema = {

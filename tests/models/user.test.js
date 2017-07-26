@@ -17,23 +17,30 @@ test.before.cb('it creates a new database connection', (t) => {
   dbConnection = new Connection(config.database);
   dbConnection.connect().then(() => {
     t.truthy(dbConnection.isConnected());
-    user = new User({ db: dbConnection.db, schema: userSchema, tableName: schema.tableName });
+    user = new User({
+      db: dbConnection.db,
+      schema: userSchema,
+      tableName: schema.tableName,
+      salt: config.secret.passwordSalt,
+    });
     t.end();
   });
 });
 
-test.cb('it creates a new user', (t) => {
+test.cb.only('it creates a new user', (t) => {
   user.createUser(_.omit(mockData, 'phone')).then((data) => {
     t.truthy(data.id);
     userId = data.id;
+    console.log(data)
     t.end();
   })
 });
 
-test.cb('it updates an user', (t) => {
+test.cb.only('it updates an user', (t) => {
   const newPhone = '+12 1234567890';
   user.updateUser(userId, { phone: newPhone }).then((data) => {
     t.is(data.phone, newPhone);
+    console.log(data)
     t.end();
   })
 });
@@ -41,6 +48,13 @@ test.cb('it updates an user', (t) => {
 test.cb('it gets an user', (t) => {
   user.getUser(userId).then((data) => {
     t.is(data.id, userId);
+    t.end();
+  })
+});
+
+test.cb('it queries an user', (t) => {
+  user.queryUser(_.pick(mockData, 'firstName')).then((data) => {
+    t.is(data[0].id, userId);
     t.end();
   })
 });
