@@ -10,6 +10,10 @@ const user = {
   email: { type: 'string', format: 'email', 'm-unique': true },
   status: { type: 'string', enum: ['GUEST', 'ACTIVE', 'BLOCKED'], },
   expectedCalories: { type: 'number', },
+  roles: { type: 'array', items: {
+    type: 'string',
+    minLength: 1,
+  }, },
   createdAt: { type: 'string', format: 'date-time', },
   updatedAt: { type: 'string', format: 'date-time', },
 };
@@ -17,7 +21,7 @@ const user = {
 const postSchema = {
   type: 'object',
   properties: _.omit(user, 'id'),
-  required: ['firstName', 'lastName', 'email', 'password'],
+  required: ['firstName', 'lastName', 'email', 'password', 'roles'],
 };
 
 module.exports = {

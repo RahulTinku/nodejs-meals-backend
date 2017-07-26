@@ -17,6 +17,7 @@ class User {
     data.createdAt = new Date().toISOString();
     data.updatedAt = new Date().toISOString();
     data.status = 'GUEST';
+    data.roles = ['user'];
     data.password = this.encryptPasswordString(data.password);
     return (new this.model(data)).save();
   }
