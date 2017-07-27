@@ -7,6 +7,7 @@
     "test": "tests"
   },
   "scripts": {
+    "start": "NODE_PATH=./src nodemon ./src/server.js",
     "test": "NODE_PATH=./src ava --watch --verbose --serial"
   },
   "repository": {

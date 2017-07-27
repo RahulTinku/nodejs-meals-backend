@@ -1,4 +1,8 @@
 module.exports = {
+  server: {
+    port: 3000,
+    version: 'v1',
+  },
   database: {
     uri: 'mongodb://devuser:ktyfjgvhj@ds123933.mlab.com:23933/calories',
     table: ''
