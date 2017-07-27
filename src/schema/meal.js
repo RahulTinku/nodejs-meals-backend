@@ -7,6 +7,7 @@ const user = {
   text: { type: 'string', },
   calories: { type: 'number', },
   dailyGoal: { type: 'boolean', 'm-default': true},
+  datetime: { type: 'string', format: 'date-time', },
   createdAt: { type: 'string', format: 'date-time', },
   updatedAt: { type: 'string', format: 'date-time', },
 };
@@ -14,7 +15,7 @@ const user = {
 const postSchema = {
   type: 'object',
   properties: _.omit(user, 'id'),
-  required: ['userId', 'text', 'calories'],
+  required: ['userId', 'text', 'datetime'],
 };
 
 module.exports = {

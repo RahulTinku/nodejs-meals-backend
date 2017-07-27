@@ -18,10 +18,13 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.0",
+    "body-parser": "^1.17.2",
     "bunyan": "^1.8.10",
+    "express": "^4.15.3",
     "json-schema-faker": "^0.4.3",
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
+    "moment": "^2.18.1",
     "mongoose": "^4.11.4",
     "nutritionix": "^0.6.1"
   },

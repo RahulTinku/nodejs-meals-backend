@@ -11,6 +11,7 @@ let dbConnection;
 let meal;
 let mealId;
 let mockData = jsf(schema.postSchema);
+mockData.calories = parseInt(Math.random() * 100);
 let mealSchema = mongooseSchema(schema.postSchema);
 
 test.before.cb('it creates a new database connection', (t) => {
@@ -45,6 +46,16 @@ test.cb('it updates a meal', (t) => {
 test.cb('it gets meal details', (t) => {
   meal.getMeal(mealId).then((data) => {
     t.is(data.id, mealId);
+    t.end();
+  })
+});
+
+test.cb('it gets calories consumed for a day', (t) => {
+  meal.getConsumedCalorie({
+    userId: mockData.userId,
+    date: mockData.datetime.split('T')[0],
+  }).then((data) => {
+    t.is(data, mockData.calories);
     t.end();
   })
 });

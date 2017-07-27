@@ -3,6 +3,7 @@ const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const exceptions = require('common/exceptions');
+const dateConverter = require('common/helpers/dateConverter');
 
 class Meal {
   constructor(options) {
@@ -40,6 +41,19 @@ class Meal {
       });
     })
   }
+
+  getConsumedCalorie(input) {
+    //{ userId: '', date: '' }
+    const nextDate = dateConverter.addDays({ count: 1, date: input.date});
+    const query = [
+      { $match: { userId: input.userId, datetime: { $gt: input.date, $lte: nextDate } } },
+      { $group: { _id: null, calories: { $sum: '$calories' } } },
+    ];
+    return this.model.aggregate(query).then((data) => {
+      return (data && data[0]) ? data[0].calories : 0;
+    });
+  }
+
 }
 
 module.exports = Meal;
