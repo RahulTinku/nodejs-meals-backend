@@ -10,7 +10,7 @@ class Meal {
     this.db = options.db;
     this.schema = new mongoose.Schema(options.schema);
     this.model = this.db.model(options.tableName, this.schema);
-    this.salt = options.salt;
+    this.jsonSchema = options.jsonSchema;
   }
 
   addMeal(input) {
@@ -52,6 +52,10 @@ class Meal {
     return this.model.aggregate(query).then((data) => {
       return (data && data[0]) ? data[0].calories : 0;
     });
+  }
+
+  getJsonSchema() {
+    return this.jsonSchema;
   }
 
 }

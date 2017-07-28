@@ -7,6 +7,8 @@ const Access = require('models/access');
 const accessSchema = require('schema/access');
 const Role = require('models/role');
 const roleSchema = require('schema/role');
+const Meal = require('models/meal');
+const mealSchema = require('schema/meal');
 
 module.exports = (db) => {
   return {
@@ -29,6 +31,12 @@ module.exports = (db) => {
       schema: mongooseSchema(roleSchema.postSchema),
       tableName: roleSchema.tableName,
       jsonSchema: roleSchema
+    }),
+    meal: new Meal({
+      db,
+      schema: mongooseSchema(mealSchema.postSchema),
+      tableName: mealSchema.tableName,
+      jsonSchema: mealSchema
     })
   };
 };
