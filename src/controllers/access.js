@@ -1,6 +1,7 @@
 const validator = require('common/helpers/validator');
 const dateConverter = require('common/helpers/dateConverter');
 const Promise = require('bluebird');
+const exceptions = require('common/exceptions');
 const _ = require('lodash');
 
 class AccessController {
@@ -23,10 +24,13 @@ class AccessController {
 
   verifyAuth(req, res, next) {
     const input = req.headers.authorization;
-    this.model.verifyToken(input)
-      .then(result => (req.authToken = result))
-      .then(() => next())
-      .catch(error => next(error));
+    if(!input) next(new exceptions.UnAuthorized());
+    else {
+      this.model.verifyToken(input)
+        .then(result => (req.authToken = result))
+        .then(() => next())
+        .catch(error => next(error));
+    }
   }
 }
 

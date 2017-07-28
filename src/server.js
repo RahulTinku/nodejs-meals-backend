@@ -13,7 +13,6 @@ const serializer = new Serializer();
 const dbConnection = new Connection(config.database);
 
 dbConnection.connect().then(() => {
-
   app.use(bodyParser.json());
   app.all('/*', middlewares.enableCors);
 

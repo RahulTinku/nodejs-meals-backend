@@ -1,6 +1,7 @@
 const validator = require('common/helpers/validator');
 const Promise = require('bluebird');
 const _ = require('lodash');
+const exceptions = require('common/exceptions');
 
 class UserController {
   constructor(model) {
@@ -8,6 +9,9 @@ class UserController {
     this.jsonSchema = model.getJsonSchema();
     this.registerUser  = this.registerUser.bind(this);
     this.validateLogin  = this.validateLogin.bind(this);
+    this.getUser  = this.getUser.bind(this);
+    this.populateParamsUserId  = this.populateParamsUserId.bind(this);
+    this.populateTokenUser  = this.populateTokenUser.bind(this);
   }
 
   registerUser(req, res, next) {
@@ -27,6 +31,27 @@ class UserController {
       .then(result => (req.user = result))
       .then(() => next())
       .catch(error => next(error));
+  }
+
+  getUser(req, res, next) {
+    this.model.getUser(req.params.userId).then(result => res.send(result));
+  }
+
+  populateParamsUserId (req, res, next) {
+    this.model.getUser(req.params.userId).then((userData) => {
+      req.userId = userData;
+      next();
+    })
+  }
+
+  populateTokenUser(req, res, next) {
+    this.model.getUser(req.authToken.userId).then((userData) => {
+      if(!userData) next(new exceptions.UnAuthorized());
+      else {
+        req.user = userData;
+        next()
+      }
+    });
   }
 }
 

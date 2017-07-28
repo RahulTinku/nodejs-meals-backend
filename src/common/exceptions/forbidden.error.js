@@ -1,11 +1,11 @@
-class UserNotAuthorized extends Error {
+class Forbidden extends Error {
   constructor(message) {
     super(message);
-    this.message = 'User Not Authorized';
+    this.message = 'Forbidden';
     this.detail = message;
     this.name = this.constructor.name;
     this.statusCode = 403;
   }
 }
 
-module.exports = UserNotAuthorized;
+module.exports = Forbidden;

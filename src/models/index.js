@@ -5,6 +5,8 @@ const User = require('models/user');
 const userSchema = require('schema/user');
 const Access = require('models/access');
 const accessSchema = require('schema/access');
+const Role = require('models/role');
+const roleSchema = require('schema/role');
 
 module.exports = (db) => {
   return {
@@ -21,6 +23,12 @@ module.exports = (db) => {
       tableName: accessSchema.tableName,
       signature: config.secret.jwtSignature,
       jsonSchema: accessSchema
+    }),
+    role: new Role({
+      db,
+      schema: mongooseSchema(roleSchema.postSchema),
+      tableName: roleSchema.tableName,
+      jsonSchema: roleSchema
     })
   };
 };

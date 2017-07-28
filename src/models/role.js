@@ -2,13 +2,13 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
-const exceptions = require('common/exceptions');
 
-class User {
+class Role {
   constructor(options) {
     this.db = options.db;
     this.schema = new mongoose.Schema(options.schema);
     this.model = this.db.model(options.tableName, this.schema);
+    this.jsonSchema = options.jsonSchema;
   }
 
   checkPermission(input) {
@@ -28,6 +28,10 @@ class User {
       return this.model.findOne(query);
   }
 
+  getJsonSchema() {
+    return this.jsonSchema;
+  }
+
 }
 
-module.exports = User;
+module.exports = Role;
