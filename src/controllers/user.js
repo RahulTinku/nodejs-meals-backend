@@ -9,6 +9,7 @@ class UserController {
     this.jsonSchema = model.getJsonSchema();
     this.registerUser  = this.registerUser.bind(this);
     this.validateLogin  = this.validateLogin.bind(this);
+    this.listUsers  = this.listUsers.bind(this);
     this.showUser  = this.showUser.bind(this);
     this.updateUser  = this.updateUser.bind(this);
     this.removeUser  = this.removeUser.bind(this);
@@ -37,6 +38,12 @@ class UserController {
 
   showUser(req, res, next) {
     this.model.getUser(req.params.userId)
+      .then(result => res.send(result))
+      .catch(error => next(error));
+  }
+
+  listUsers(req, res, next) {
+    this.model.queryUser({})
       .then(result => res.send(result))
       .catch(error => next(error));
   }

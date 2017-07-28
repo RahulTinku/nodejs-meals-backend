@@ -17,7 +17,7 @@ const user = {
 
 const postSchema = {
   type: 'object',
-  properties: _.pick(user, ['firstName', 'lastName', 'email', 'password', 'expectedCalories', 'phone']),
+  properties: _.pick(user, ['firstName', 'lastName', 'email', 'password', 'expectedCalories', 'phone', 'roles']),
   required: ['firstName', 'lastName', 'email', 'password'],
 };
 

@@ -3,11 +3,13 @@ const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const exceptions = require('common/exceptions');
+const uniqueValidator = require('mongoose-unique-validator');
 
 class User {
   constructor(options) {
     this.db = options.db;
     this.schema = new mongoose.Schema(options.schema);
+    this.schema.plugin(uniqueValidator);
     this.model = this.db.model(options.tableName, this.schema);
     this.salt = options.salt;
     this.jsonSchema = options.jsonSchema;

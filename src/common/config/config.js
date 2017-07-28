@@ -4,7 +4,7 @@ module.exports = {
     version: 'v1',
   },
   database: {
-    uri: 'mongodb://devuser:ktyfjgvhj@ds123933.mlab.com:23933/calories',
+    uri: 'mongodb://localhost:27017/calories',
     table: ''
   },
   logger: {

@@ -1,13 +1,10 @@
 const routes = (app, {user, access, role, meal}) => {
-  app.get('/vignes/:userId', function (req, res) {
-    res.send(req.params)
-  })
   app.post('/auth/login', user.validateLogin, access.performLogin);
-  app.get('/users');
+  app.get('/users', access.verifyAuth, user.populateTokenUser, role.validateRole('users', 'READ'), user.listUsers);
   app.post('/users', user.registerUser);
-  app.put('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('user', 'WRITE'), user.updateUser);
-  app.get('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('user', 'READ'), user.showUser);
-  app.delete('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('user', 'WRITE'), user.removeUser);
+  app.put('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('users', 'WRITE'), user.updateUser);
+  app.get('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('users', 'READ'), user.showUser);
+  app.delete('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('users', 'WRITE'), user.removeUser);
 
   app.get('/users/:userId/meals');
   app.post('/users/:userId/meals');

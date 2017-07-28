@@ -14,7 +14,10 @@ module.exports = (jsonSchema) => {
       type: (properties[key].type).capitalize()
     };
     if((jsonSchema.required || []).indexOf(key) > -1) schema[key].required = true;
-    if((properties[key]['m-unique'])) schema[key].unique = true;
+    if((properties[key]['m-unique'])) {
+      schema[key].unique = true;
+      schema[key].uniqueCaseInsensitive = true
+    }
     if(properties[key]['m-default']) schema[key].default = properties[key]['m-default'];
   });
 
