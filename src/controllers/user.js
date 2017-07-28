@@ -11,6 +11,7 @@ class UserController {
     this.validateLogin  = this.validateLogin.bind(this);
     this.showUser  = this.showUser.bind(this);
     this.updateUser  = this.updateUser.bind(this);
+    this.removeUser  = this.removeUser.bind(this);
     this.populateParamsUserId  = this.populateParamsUserId.bind(this);
     this.populateTokenUser  = this.populateTokenUser.bind(this);
   }
@@ -35,7 +36,9 @@ class UserController {
   }
 
   showUser(req, res, next) {
-    this.model.getUser(req.params.userId).then(result => res.send(result));
+    this.model.getUser(req.params.userId)
+      .then(result => res.send(result))
+      .catch(error => next(error));
   }
 
   updateUser(req, res, next) {
@@ -45,7 +48,12 @@ class UserController {
       .then(input => this.model.updateUser(req.userId._id, input))
       .then(result => res.send(result))
       .catch(error => next(error));
+  }
 
+  removeUser(req, res, next) {
+    this.model.deleteUser(req.userId._id)
+      .then(result => res.send())
+      .catch(error => next(error));
   }
 
   populateParamsUserId (req, res, next) {

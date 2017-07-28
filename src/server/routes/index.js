@@ -6,8 +6,8 @@ const routes = (app, {user, access, role, meal}) => {
   app.get('/users');
   app.post('/users', user.registerUser);
   app.put('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('user', 'WRITE'), user.updateUser);
-  app.get('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('user', 'WRITE'), user.showUser);
-  app.delete('/users/:userId');
+  app.get('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('user', 'READ'), user.showUser);
+  app.delete('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('user', 'WRITE'), user.removeUser);
 
   app.get('/users/:userId/meals');
   app.post('/users/:userId/meals');
