@@ -9,7 +9,8 @@ class UserController {
     this.jsonSchema = model.getJsonSchema();
     this.registerUser  = this.registerUser.bind(this);
     this.validateLogin  = this.validateLogin.bind(this);
-    this.getUser  = this.getUser.bind(this);
+    this.showUser  = this.showUser.bind(this);
+    this.updateUser  = this.updateUser.bind(this);
     this.populateParamsUserId  = this.populateParamsUserId.bind(this);
     this.populateTokenUser  = this.populateTokenUser.bind(this);
   }
@@ -33,8 +34,18 @@ class UserController {
       .catch(error => next(error));
   }
 
-  getUser(req, res, next) {
+  showUser(req, res, next) {
     this.model.getUser(req.params.userId).then(result => res.send(result));
+  }
+
+  updateUser(req, res, next) {
+    const input = _.cloneDeep(req.body);
+    validator.buildParams({ input, schema: this.jsonSchema.updateSchema })
+      .then(input => validator.validate({ input, schema: this.jsonSchema.updateSchema }))
+      .then(input => this.model.updateUser(req.userId._id, input))
+      .then(result => res.send(result))
+      .catch(error => next(error));
+
   }
 
   populateParamsUserId (req, res, next) {

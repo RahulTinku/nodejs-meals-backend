@@ -17,8 +17,14 @@ const user = {
 
 const postSchema = {
   type: 'object',
-  properties: _.cloneDeep(user),
+  properties: _.pick(user, ['firstName', 'lastName', 'email', 'password', 'expectedCalories', 'phone']),
   required: ['firstName', 'lastName', 'email', 'password'],
+};
+
+const updateSchema = {
+  type: 'object',
+  properties: _.pick(user, ['firstName', 'lastName', 'email', 'password', 'expectedCalories', 'phone']),
+  additionalProperties: false,
 };
 
 const loginSchema = {
@@ -28,6 +34,7 @@ const loginSchema = {
 };
 
 module.exports = {
+  updateSchema,
   postSchema,
   tableName,
   loginSchema,
