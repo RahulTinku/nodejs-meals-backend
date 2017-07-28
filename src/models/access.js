@@ -9,6 +9,7 @@ class Access {
     this.schema = new mongoose.Schema(options.schema);
     this.model = this.db.model(options.tableName, this.schema);
     this.signature = options.signature;
+    this.jsonSchema = options.jsonSchema;
   }
 
   createAccessLog(input) {
@@ -50,6 +51,10 @@ class Access {
     return new Promise((resolve) => {
       resolve(jwt.verify(token, this.signature));
     });
+  }
+
+  getJsonSchema() {
+    return this.jsonSchema;
   }
 }
 

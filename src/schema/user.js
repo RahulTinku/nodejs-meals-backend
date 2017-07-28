@@ -10,21 +10,25 @@ const user = {
   email: { type: 'string', format: 'email', 'm-unique': true },
   status: { type: 'string', enum: ['GUEST', 'ACTIVE', 'BLOCKED'], },
   expectedCalories: { type: 'number', },
-  roles: { type: 'array', items: {
-    type: 'string',
-    minLength: 1,
-  }, },
+  roles: { type: 'string', 'm-default': 'user'},
   createdAt: { type: 'string', format: 'date-time', },
   updatedAt: { type: 'string', format: 'date-time', },
 };
 
 const postSchema = {
   type: 'object',
-  properties: _.omit(user, 'id'),
-  required: ['firstName', 'lastName', 'email', 'password', 'roles'],
+  properties: _.cloneDeep(user),
+  required: ['firstName', 'lastName', 'email', 'password'],
+};
+
+const loginSchema = {
+  type: 'object',
+  properties: _.cloneDeep(user),
+  required: ['email', 'password'],
 };
 
 module.exports = {
   postSchema,
   tableName,
+  loginSchema,
 };

@@ -10,6 +10,7 @@ class User {
     this.schema = new mongoose.Schema(options.schema);
     this.model = this.db.model(options.tableName, this.schema);
     this.salt = options.salt;
+    this.jsonSchema = options.jsonSchema;
   }
 
   createUser(input) {
@@ -57,9 +58,13 @@ class User {
     return this.queryUser({ email }).then((data) => {
       if(data.length === 0) throw new exceptions.NotFound();
       if(!this.verifyPassword(password, data[0].password)) throw new exceptions.PasswordMismatch();
-      if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotAuthorized();
-      return true;
+      //if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
+      return data[0];
     });
+  }
+
+  getJsonSchema() {
+    return this.jsonSchema;
   }
 }
 
