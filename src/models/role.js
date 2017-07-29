@@ -11,21 +11,17 @@ class Role {
     this.jsonSchema = options.jsonSchema;
   }
 
-  checkPermission(input) {
-    /*{
-      name: [''], resource: '', onRole: '', action: ''
-    }*/
-      const query = {
-        name: {
-          $in: input.name,
-        },
-        permissions: {
-          $elemMatch: {
-            resources: input.resource, onRoles: input.onRole, action: input.action,
-          }
-        }
-      };
-      return this.model.findOne(query);
+  getRoleByName(input) {
+    return this.model.findOne({ name: input });
+  }
+
+  checkPermission({ name, permissions, level }) {
+    const query = {
+      name,
+      permissions,
+    };
+    if (level) query.level = level;
+    return this.model.findOne(query);
   }
 
   getJsonSchema() {
