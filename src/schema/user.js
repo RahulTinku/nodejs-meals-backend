@@ -33,9 +33,15 @@ const loginSchema = {
   required: ['email', 'password'],
 };
 
+const querySchema = {
+  type: 'object',
+  properties: _.omit(user, ['password']),
+};
+
 module.exports = {
   updateSchema,
   postSchema,
   tableName,
   loginSchema,
+  querySchema,
 };

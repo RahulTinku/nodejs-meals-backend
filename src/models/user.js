@@ -38,9 +38,17 @@ class User {
     return this.model.findById(userId);
   }
 
-  queryUser(input) {
+  queryUser(input, {page, limit, order, sortby}) {
     return new Promise((resolve, reject) => {
-      this.model.find(input).find((err, data) => {
+      let query =  this.model.find(typeof input === 'string' ? JSON.parse(input) : input);
+      if (Number(page) > 0) query = query.skip((limit || 10 ) * (page - 1));
+      if (Number(limit) > 0) query = query.limit(Number(limit));
+      if (sortby) {
+        const sort = {};
+        sort[sortby] = (order === 'asc' ? 1 : -1);
+        query = query.sort(sort);
+      }
+      query.find((err, data) => {
         if (err) reject(err);
         else resolve(data);
       });
