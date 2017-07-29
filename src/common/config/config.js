@@ -17,5 +17,8 @@ module.exports = {
   nutritionix: {
     key: '1bc56afe2aef0fa1e670a6ad30676936',
     id: '3522a250'
+  },
+  listing: {
+    limit: 10
   }
 };

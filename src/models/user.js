@@ -3,6 +3,7 @@ const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const exceptions = require('common/exceptions');
+const config = require('common/config/config');
 const uniqueValidator = require('mongoose-unique-validator');
 
 class User {
@@ -41,7 +42,7 @@ class User {
   queryUser(input, {page, limit, order, sortby}) {
     return new Promise((resolve, reject) => {
       let query =  this.model.find(typeof input === 'string' ? JSON.parse(input) : input);
-      if (Number(page) > 0) query = query.skip((limit || 10 ) * (page - 1));
+      if (Number(page) > 0) query = query.skip((limit || config.listing.limit ) * (page - 1));
       if (Number(limit) > 0) query = query.limit(Number(limit));
       if (sortby) {
         const sort = {};

@@ -71,9 +71,10 @@ class UserController {
 
   populateParamsUserId (req, res, next) {
     this.model.getUser(req.params.userId).then((userData) => {
+      if(!userData) next(new exceptions.NotFound());
       req.userId = userData;
       next();
-    })
+    }).catch(error => next(error));
   }
 
   populateTokenUser(req, res, next) {

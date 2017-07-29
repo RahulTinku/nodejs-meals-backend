@@ -2,6 +2,7 @@ const validator = require('common/helpers/validator');
 const Promise = require('bluebird');
 const _ = require('lodash');
 const exceptions = require('common/exceptions');
+const stringToQuery = require('common/helpers/stringToQuery');
 
 class MealController {
   constructor(model) {
@@ -32,7 +33,12 @@ class MealController {
   }
 
   listMeals(req, res, next) {
-    this.model.queryMeal({})
+    const query = stringToQuery(req.query.filter);
+    const searchable = _.keys(this.jsonSchema.querySchema.properties);
+    _.each(query.keys, (key) => {
+      if(key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
+    });
+    this.model.queryUser(query.json, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
       .then(result => res.send(result))
       .catch(error => next(error));
   }

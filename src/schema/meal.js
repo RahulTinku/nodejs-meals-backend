@@ -24,8 +24,14 @@ const updateSchema = {
   required: ['userId', 'text', 'datetime'],
 };
 
+const querySchema = {
+  type: 'object',
+  properties: _.omit(meal, ['userId']),
+};
+
 module.exports = {
   postSchema,
   updateSchema,
   tableName,
+  querySchema,
 };
