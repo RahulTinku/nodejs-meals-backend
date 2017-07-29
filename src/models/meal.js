@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const exceptions = require('common/exceptions');
 const dateConverter = require('common/helpers/dateConverter');
+const NutritionixClient = require('nutritionix');
+const config = require('common/config/config');
 
 class Meal {
   constructor(options) {
@@ -11,6 +13,10 @@ class Meal {
     this.schema = new mongoose.Schema(options.schema);
     this.model = this.db.model(options.tableName, this.schema);
     this.jsonSchema = options.jsonSchema;
+    this.nutritionix = new NutritionixClient({
+      appId: config.nutritionix.id,
+      appKey: config.nutritionix.key
+    });
   }
 
   addMeal(input) {
@@ -53,12 +59,19 @@ class Meal {
   getConsumedCalorie(input) {
     //{ userId: '', date: '' }
     const nextDate = dateConverter.addDays({ count: 1, date: input.date});
+    const currentDate = dateConverter.addDays({ count: 0, date: input.date});
     const query = [
-      { $match: { userId: input.userId, datetime: { $gt: input.date, $lte: nextDate } } },
+      { $match: { userId: input.userId, datetime: { $gt: currentDate, $lte: nextDate } } },
       { $group: { _id: null, calories: { $sum: '$calories' } } },
     ];
     return this.model.aggregate(query).then((data) => {
       return (data && data[0]) ? data[0].calories : 0;
+    });
+  }
+
+  getNutriCalories(food) {
+    return this.nutritionix.natural(food).then((data) => {
+      return parseInt(_.find(data.results[0].nutrients, {usda_tag: 'ENERC_KCAL' }).value || 0, 10);
     });
   }
 

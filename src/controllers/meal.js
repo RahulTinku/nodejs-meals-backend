@@ -13,14 +13,24 @@ class MealController {
     this.showMeal  = this.showMeal.bind(this);
     this.updateMeal  = this.updateMeal.bind(this);
     this.removeMeal  = this.removeMeal.bind(this);
-    this.populateParamsUserId  = this.populateParamsUserId.bind(this);
-    this.populateTokenUser  = this.populateTokenUser.bind(this);
   }
 
   addMeal(req, res, next) {
     const input = _.merge(req.body, { userId: req.userId.id });
     validator.buildParams({ input, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
+      .then((input) => {
+        if(!input.calories){
+          return this.model.getNutriCalories(input.text).then(calories => _.merge(input, { calories }))
+        }
+        return input;
+      })
+      .then(input => {
+        return this.model.getConsumedCalorie({userId: input.userId, date: input.datetime})
+          .then((consumedCalorie) => {
+            return _.merge(input, { dailyGoal: ((consumedCalorie + input.calories) < req.userId.expectedCalories) });
+          })
+      })
       .then(input => this.model.addMeal(input))
       .then(result => res.send(result))
       .catch(error => next(error));
@@ -56,23 +66,6 @@ class MealController {
     this.model.deleteMeal(req.params.mealId)
       .then(result => res.send())
       .catch(error => next(error));
-  }
-
-  populateParamsUserId (req, res, next) {
-    this.model.getUser(req.params.userId).then((userData) => {
-      req.userId = userData;
-      next();
-    })
-  }
-
-  populateTokenUser(req, res, next) {
-    this.model.getUser(req.authToken.userId).then((userData) => {
-      if(!userData) next(new exceptions.UnAuthorized());
-      else {
-        req.user = userData;
-        next()
-      }
-    });
   }
 }
 
