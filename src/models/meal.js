@@ -41,7 +41,7 @@ class Meal {
 
   queryMeal(input, {page, limit, order, sortby}) {
     return new Promise((resolve, reject) => {
-      let query =  this.model.find(typeof input === 'string' ? JSON.parse(input) : input);
+      let query =  this.model.find(input);
       if (Number(page) > 0) query = query.skip((limit || config.listing.limit ) * (page - 1));
       if (Number(limit) > 0) query = query.limit(Number(limit));
       if (sortby) {
@@ -61,7 +61,7 @@ class Meal {
     const nextDate = dateConverter.addDays({ count: 1, date: input.date});
     const currentDate = dateConverter.addDays({ count: 0, date: input.date});
     const query = [
-      { $match: { userId: input.userId, datetime: { $gt: currentDate, $lte: nextDate } } },
+      { $match: { userId: input.userId, date: { $gt: currentDate, $lte: nextDate } } },
       { $group: { _id: null, calories: { $sum: '$calories' } } },
     ];
     return this.model.aggregate(query).then((data) => {

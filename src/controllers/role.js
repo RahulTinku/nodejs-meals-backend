@@ -8,6 +8,16 @@ class RoleController {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
     this.validateRole  = this.validateRole.bind(this);
+    this.getNextLevelRoles  = this.getNextLevelRoles.bind(this);
+  }
+
+  getNextLevelRoles(req, res, next) {
+    console.log('query', { level: { $gt: req.user.roleLevel } })
+    this.model.queryRole({ level: { $gt: req.user.roleLevel } })
+      .then(roleData => {
+        req.user.nextLevelRoles = _.map(roleData, 'name');
+        next();
+      });
   }
 
   validateRole(resource, action) {
@@ -25,21 +35,13 @@ class RoleController {
         const input = { name: req.user.roles, permissions: `${permission}${resource}.${action}`, level: userRoleLevel };
         return this.model.checkPermission(input)
           .then(result => {
-            if(result && result._id) next();
+            if(result && result._id) {
+              req.user.roleLevel = result.toObject().level;
+              next();
+            }
             else next(new exceptions.Forbidden())
           })
       }).catch(error => next(error));
-
-      /*if(req.user._id.toString() === (req.userId && req.userId._id.toString())) next();
-      else {
-        const input = { name: [req.user.roles], resource, onRole: (req.userId || {}).role || 'user', action };
-        this.model.checkPermission(input)
-          .then(result => {
-            if(result && result._id) next();
-            else next(new exceptions.UnAuthorized())
-          })
-          .catch(error => next(error));
-      }*/
     }
   }
 }

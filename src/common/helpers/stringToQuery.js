@@ -14,7 +14,6 @@ const fetchGroups = (string) => {
         groups = string.match(regEx) || [];
       } while(groups.length > 0);
     }
-
   } else {
     string = {};
   }

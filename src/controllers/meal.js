@@ -26,7 +26,7 @@ class MealController {
         return input;
       })
       .then(input => {
-        return this.model.getConsumedCalorie({userId: input.userId, date: input.datetime})
+        return this.model.getConsumedCalorie(_.pick(input, ['userId', 'date']))
           .then((consumedCalorie) => {
             return _.merge(input, { dailyGoal: ((consumedCalorie + input.calories) < req.userId.expectedCalories) });
           })
@@ -48,7 +48,8 @@ class MealController {
     _.each(query.keys, (key) => {
       if(key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
     });
-    this.model.queryUser(query.json, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
+    const input = typeof (query.json) === 'string' ? JSON.parse(query.json) : query.json;
+    this.model.queryUser(input, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
       .then(result => res.send(result))
       .catch(error => next(error));
   }

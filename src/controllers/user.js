@@ -3,6 +3,10 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const exceptions = require('common/exceptions');
 const stringToQuery = require('common/helpers/stringToQuery');
+const Serializer = require('common/serializer');
+const config = require('common/config/config');
+
+const serializer = new Serializer();
 
 class UserController {
   constructor(model) {
@@ -23,7 +27,7 @@ class UserController {
     validator.buildParams({ input, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
       .then(input => this.model.createUser(input))
-      .then(result => res.send(result))
+      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }
 
@@ -39,7 +43,7 @@ class UserController {
 
   showUser(req, res, next) {
     this.model.getUser(req.params.userId)
-      .then(result => res.send(result))
+      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }
 
@@ -49,8 +53,13 @@ class UserController {
     _.each(query.keys, (key) => {
       if(key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
     });
-    this.model.queryUser(query.json, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
-      .then(result => res.send(result))
+    const input = typeof (query.json) === 'string' ? JSON.parse(query.json) : query.json;
+    input.roles = { $in: req.user.nextLevelRoles };
+    this.model.queryUser(input, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
+      .then(result => {
+        const pagination = { pagination: _.merge({ limit: config.listing.limit }, req.query), type: 'users' };
+        res.send(serializer.serialize(result, pagination))
+      })
       .catch(error => next(error));
   }
 
@@ -59,13 +68,13 @@ class UserController {
     validator.buildParams({ input, schema: this.jsonSchema.updateSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.updateSchema }))
       .then(input => this.model.updateUser(req.userId._id, input))
-      .then(result => res.send(result))
+      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }
 
   removeUser(req, res, next) {
     this.model.deleteUser(req.userId._id)
-      .then(result => res.send())
+      .then(result => res.send(serializer.serialize()))
       .catch(error => next(error));
   }
 

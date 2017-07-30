@@ -15,12 +15,21 @@ class Role {
     return this.model.findOne({ name: input });
   }
 
+  queryRole(input) {
+    return new Promise((resolve, reject) => {
+      this.model.find(input).find((err, data) => {
+        if (err) reject(err);
+        else resolve(data);
+      });
+    });
+  }
+
   checkPermission({ name, permissions, level }) {
     const query = {
       name,
       permissions,
     };
-    if (level) query.level = level;
+    if (level) query.level = { $lt: level };
     return this.model.findOne(query);
   }
 

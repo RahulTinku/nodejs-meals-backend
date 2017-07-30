@@ -41,7 +41,7 @@ class User {
 
   queryUser(input, {page, limit, order, sortby}) {
     return new Promise((resolve, reject) => {
-      let query =  this.model.find(typeof input === 'string' ? JSON.parse(input) : input);
+      let query =  this.model.find(input);
       if (Number(page) > 0) query = query.skip((limit || config.listing.limit ) * (page - 1));
       if (Number(limit) > 0) query = query.limit(Number(limit));
       if (sortby) {
