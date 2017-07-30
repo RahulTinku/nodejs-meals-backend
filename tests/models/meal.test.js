@@ -53,7 +53,7 @@ test.cb('it gets meal details', (t) => {
 test.cb('it gets calories consumed for a day', (t) => {
   meal.getConsumedCalorie({
     userId: mockData.userId,
-    date: mockData.datetime.split('T')[0],
+    date: mockData.date,
   }).then((data) => {
     t.is(data, mockData.calories);
     t.end();
@@ -70,6 +70,13 @@ test.cb('it queries a meal using userId', (t) => {
 test.cb('it deletes a meal', (t) => {
   meal.deleteMeal(mealId).then((data) => {
     t.is(data.id, mealId);
+    t.end();
+  })
+});
+
+test.cb('it fetches calorie information from nutritionix.com', (t) => {
+  meal.getNutriCalories('salad').then((data) => {
+    t.is(data, 19);
     t.end();
   })
 });

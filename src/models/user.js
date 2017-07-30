@@ -39,7 +39,7 @@ class User {
     return this.model.findById(userId);
   }
 
-  queryUser(input, {page, limit, order, sortby}) {
+  queryUser(input, {page, limit, order, sortby} = {}) {
     return new Promise((resolve, reject) => {
       let query =  this.model.find(input);
       if (Number(page) > 0) query = query.skip((limit || config.listing.limit ) * (page - 1));

@@ -3,6 +3,9 @@ const dateConverter = require('common/helpers/dateConverter');
 const Promise = require('bluebird');
 const exceptions = require('common/exceptions');
 const _ = require('lodash');
+const Serializer = require('common/serializer');
+
+const serializer = new Serializer();
 
 class AccessController {
   constructor(model) {
@@ -18,7 +21,7 @@ class AccessController {
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
       .then(input => this.model.createAccessLog(input))
       .then(input => this.model.createJwtToken(input))
-      .then(result => res.send(result))
+      .then(result => res.send(serializer.serialize(result, { type: 'token' })))
       .catch(error => next(error));
   }
 

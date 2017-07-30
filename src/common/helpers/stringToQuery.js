@@ -29,7 +29,7 @@ const processOperator = (op) => {
     let parsed2;
     try { parsed0 = JSON.parse(words[0]); } catch(err) {}
     try { parsed2 = JSON.parse(words[2]); } catch(err) {}
-    query[`$${words[1]}`] = [parsed0 || words[0], parsed2 || words[2]];
+    query[`$${words[1].toLowerCase()}`] = [parsed0 || words[0], parsed2 || words[2]];
   } else {
     keys.push(words[0]);
     query[words[0]] = {};

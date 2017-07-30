@@ -39,7 +39,7 @@ class RoleController {
               req.user.roleLevel = result.toObject().level;
               next();
             }
-            else next(new exceptions.Forbidden())
+            else next(new exceptions.UnAuthorized())
           })
       }).catch(error => next(error));
     }

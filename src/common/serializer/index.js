@@ -19,6 +19,7 @@ class Serializer {
     let mapping = this.getMapping();
     if (sourceData instanceof Error) {
       if (_.isArray(sourceData.detail)) {
+        console.log(sourceData);
         mapping.errors = Serializer.processErrors(sourceData.detail, sourceData.message, sourceData.statusCode);
         mapping.meta = {
           errorCount: mapping.errors.length,
@@ -47,7 +48,7 @@ class Serializer {
     }
 
     mapping.data = _.map((_.isArray(sourceData) ? sourceData : [sourceData]), (data) => {
-      const record = data.toObject();
+      const record = typeof data.toObject === 'function' ? data.toObject() : data;
       if (!_.isPlainObject(record)) return {};
       return {
         id: record._id,
@@ -60,8 +61,8 @@ class Serializer {
 
   static processErrors(detail, code, status) {
     const result = [];
-    let includeFieldInDetail = false;
     _.each(detail, (error) => {
+
       let field = '';
       if (error.message && error.message.indexOf('pattern') === -1 && error.message.split('"').length > 1) {
         field = error.message.split('"')[1];
@@ -75,6 +76,7 @@ class Serializer {
         status,
       });
     });
+    return result;
   }
 }
 

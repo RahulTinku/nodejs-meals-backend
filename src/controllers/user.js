@@ -74,7 +74,8 @@ class UserController {
 
   removeUser(req, res, next) {
     this.model.deleteUser(req.userId._id)
-      .then(result => res.send(serializer.serialize()))
+      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
+
       .catch(error => next(error));
   }
 

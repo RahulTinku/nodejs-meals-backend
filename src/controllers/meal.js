@@ -17,6 +17,7 @@ class MealController {
     this.showMeal  = this.showMeal.bind(this);
     this.updateMeal  = this.updateMeal.bind(this);
     this.removeMeal  = this.removeMeal.bind(this);
+    this.verifyMealOwner  = this.verifyMealOwner.bind(this);
   }
 
   addMeal(req, res, next) {
@@ -53,7 +54,8 @@ class MealController {
       if(key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
     });
     const input = typeof (query.json) === 'string' ? JSON.parse(query.json) : query.json;
-    this.model.queryUser(input, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
+    input.userId = req.params.userId;
+    this.model.queryMeal(input, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
       .then(result => {
         const pagination = { pagination: _.merge({ limit: config.listing.limit }, req.query), type: 'meals' };
         res.send(serializer.serialize(result, pagination))
@@ -72,7 +74,17 @@ class MealController {
 
   removeMeal(req, res, next) {
     this.model.deleteMeal(req.params.mealId)
-      .then(result => res.send(serializer.serialize())
+      .then(result => res.send(serializer.serialize()))
+      .catch(error => next(error));
+  }
+
+  verifyMealOwner(req, res, next) {
+    this.model.getMeal(req.params.mealId)
+      .then(result => {
+        if(!result) next(new exceptions.NotFound());
+        else if (result.userId !== req.params.userId) next(new exceptions.UnAuthorized());
+        else next();
+      })
       .catch(error => next(error));
   }
 }

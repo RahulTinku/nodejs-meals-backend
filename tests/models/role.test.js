@@ -24,7 +24,7 @@ test.before.cb('it creates a new database connection', (t) => {
 
 test.cb('it checks if permissions exists', (t) => {
   role.checkPermission({
-    name: ['user', 'admin'], resource: 'users', onRole: 'user', action: 'WRITE'
+    name: 'admin', permissions: 'users.write', level: 3
   }).then((data) => {
     t.truthy((data || {}).id);
     t.end();

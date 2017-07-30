@@ -70,7 +70,7 @@ test.cb('it compares and verify the password', (t) => {
   t.end();
 });
 
-test.cb('it verifies login credentials', (t) => {
+test.cb.skip('it verifies login credentials', (t) => {
   user.verifyLogin(mockData.email, mockData.password).catch((err) => {
     t.is(err.message, 'User Not Active');
     t.end();
