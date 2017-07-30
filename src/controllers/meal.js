@@ -3,6 +3,10 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const exceptions = require('common/exceptions');
 const stringToQuery = require('common/helpers/stringToQuery');
+const Serializer = require('common/serializer');
+const config = require('common/config/config');
+
+const serializer = new Serializer();
 
 class MealController {
   constructor(model) {
@@ -32,13 +36,13 @@ class MealController {
           })
       })
       .then(input => this.model.addMeal(input))
-      .then(result => res.send(result))
+      .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
       .catch(error => next(error));
   }
 
   showMeal(req, res, next) {
     this.model.getMeal(req.params.mealId)
-      .then(result => res.send(result))
+      .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
       .catch(error => next(error));
   }
 
@@ -50,7 +54,10 @@ class MealController {
     });
     const input = typeof (query.json) === 'string' ? JSON.parse(query.json) : query.json;
     this.model.queryUser(input, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
-      .then(result => res.send(result))
+      .then(result => {
+        const pagination = { pagination: _.merge({ limit: config.listing.limit }, req.query), type: 'meals' };
+        res.send(serializer.serialize(result, pagination))
+      })
       .catch(error => next(error));
   }
 
@@ -59,13 +66,13 @@ class MealController {
     validator.buildParams({ input, schema: this.jsonSchema.updateSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.updateSchema }))
       .then(input => this.model.updateMeal(req.params.mealId, input))
-      .then(result => res.send(result))
+      .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
       .catch(error => next(error));
   }
 
   removeMeal(req, res, next) {
     this.model.deleteMeal(req.params.mealId)
-      .then(result => res.send())
+      .then(result => res.send(serializer.serialize())
       .catch(error => next(error));
   }
 }
