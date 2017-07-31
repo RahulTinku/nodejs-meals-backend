@@ -2,7 +2,7 @@ module.exports = {
   server: {
     port: 3000,
     version: 'v1',
-    status: 'live' //test || live
+    status: 'test' //test || live
   },
   database: {
     uri: 'mongodb://localhost:27017/calories',
@@ -29,7 +29,11 @@ module.exports = {
         newUser: {
           subject: 'Verify your account',
           templateId: '4a4cb1f4-bbff-4d52-89ff-0804e500ece9'
-        }
+        },
+        forgotPassword: {
+          subject: 'Password Reset',
+          templateId: 'a0624261-3f89-495d-b60e-434e7a8e751a',
+        },
       }
     },
     fromEmail: 'vignes.arul@gmail.com'

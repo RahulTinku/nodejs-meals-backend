@@ -33,8 +33,8 @@ class UserController {
     validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
       .then(input => this.model.createUser(input))
-      .then(input => mailer({to: input.email, userDetails: _.pick(input, 'firstName'), template: 'newUser'}))
-      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
+      .then(result => Promise.all([res.send(serializer.serialize(result, { type: 'users' })),
+        mailer({to: result.email, userDetails: _.pick(result, 'firstName'), template: 'newUser'})]))
       .catch(error => next(error));
   }
 
@@ -102,7 +102,9 @@ class UserController {
         }
         throw new exceptions.NotFound();
       })
-      .then(result => res.status(202).send(serializer.serialize()))
+      .then(result => Promise.all([res.status(202).send(serializer.serialize()),
+        mailer({to: result.email, userDetails: {
+        firstName: result.firstName, code: result.verification.code }, template: 'forgotPassword'})]))
       .catch(error => next(error));
   }
 
