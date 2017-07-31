@@ -101,7 +101,7 @@ class UserController {
           throw new exceptions.NotFound();
         }
       })
-      .then(result => res.send(serializer.serialize()))
+      .then(result => res.status(202).send(serializer.serialize()))
       .catch(error => next(error));
   }
 

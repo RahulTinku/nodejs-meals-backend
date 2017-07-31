@@ -53,7 +53,7 @@ class Serializer {
       return {
         id: record._id,
         type,
-        attributes: _.omit(record, ['_id', 'password', '__v']),
+        attributes: _.omit(record, ['_id', 'password', '__v', 'verification']),
       };
     });
     return mapping;

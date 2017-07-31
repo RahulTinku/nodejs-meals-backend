@@ -9,7 +9,7 @@ let userMock = jsf(userSchema.postSchema);
 let userToken;
 let userId;
 
-test.cb('it should allow to create a new user', (t) => {
+test.cb.only('it should allow to create a new user', (t) => {
   request(app)
     .post('/users')
     .type('json')
@@ -22,7 +22,7 @@ test.cb('it should allow to create a new user', (t) => {
     })
 });
 
-test.cb('it should allow user to login', (t) => {
+test.cb.only('it should allow user to login', (t) => {
   request(app)
     .post('/auth/login')
     .type('json')
@@ -36,7 +36,19 @@ test.cb('it should allow user to login', (t) => {
     })
 });
 
-test.cb('it should allow user to update user profile', (t) => {
+test.cb.only('it should allow user to view user profile', (t) => {
+  request(app)
+    .get(`/users/${userId}`)
+    .set('Authorization', userToken)
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .then(res => {
+      t.truthy(_.isEqual(res.body.data[0].id, userId));
+      t.end();
+    })
+});
+
+test.cb.only('it should allow user to update user profile', (t) => {
   let userUpdateMock = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
   request(app)
     .put(`/users/${userId}`)
@@ -49,4 +61,37 @@ test.cb('it should allow user to update user profile', (t) => {
       t.truthy(_.isEqual(_.pick(res.body.data[0].attributes, _.keys(userUpdateMock)), userUpdateMock));
       t.end();
     })
+});
+
+test.cb.only('it should allow user to update user password', (t) => {
+  let userUpdateMock = { old: userMock.password, new: `${Number(Math.random() * 10000000000)}` };
+  request(app)
+    .put(`/users/${userId}/password`)
+    .set('Authorization', userToken)
+    .type('json')
+    .send(userUpdateMock)
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .then(res => {
+      t.truthy(_.isEqual(res.body.data[0].id, userId));
+      t.end();
+    })
+});
+
+test.cb.only('it should allow user initiate forgot password', (t) => {
+  request(app)
+    .post(`/auth/forgot`)
+    .type('json')
+    .send(_.pick(userMock, 'email'))
+    .expect('Content-Type', /json/)
+    .expect(202, t.end);
+});
+
+test.cb.only('it should allow user reset password', (t) => {
+  request(app)
+    .post(`/auth/reset`)
+    .type('json')
+    .send(_.pick(userMock, 'email'))
+    .expect('Content-Type', /json/)
+    .expect(404, t.end);
 });
