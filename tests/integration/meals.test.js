@@ -6,8 +6,8 @@ import userSchema from 'schema/user';
 import mealSchema from 'schema/meal';
 import _ from 'lodash';
 
-let userMock = jsf(userSchema.postSchema);
-let mealMock = _.merge({ calories: _.random(10, 100) }, jsf(mealSchema.postSchema));
+const userMock = jsf(userSchema.postSchema);
+const mealMock = _.merge({ calories: _.random(10, 100) }, jsf(mealSchema.postSchema));
 let userToken;
 let userId;
 let mealId;
@@ -23,7 +23,7 @@ test.cb.before('it should allow to create a new user', (t) => {
     .then((res) => {
       userId = res.body.data[0].id;
       t.end();
-    })
+    });
 });
 
 test.cb.before('it should allow user to login', (t) => {
@@ -33,25 +33,25 @@ test.cb.before('it should allow user to login', (t) => {
     .send(_.pick(userMock, ['email', 'password']))
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(res.body.data[0].attributes.access_token);
       userToken = res.body.data[0].attributes.access_token;
       t.end();
-    })
+    });
 });
 
 test.cb.before('it should allow admin to login', (t) => {
   request(app)
     .post('/auth/login')
     .type('json')
-    .send({email: 'admin@admin.com', password: '1234567890'})
+    .send({ email: 'admin@admin.com', password: '1234567890' })
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(res.body.data[0].attributes.access_token);
       adminToken = res.body.data[0].attributes.access_token;
       t.end();
-    })
+    });
 });
 
 test.cb('it should allow user to add a meal', (t) => {
@@ -62,7 +62,7 @@ test.cb('it should allow user to add a meal', (t) => {
     .send(mealMock)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(res.body.data[0].id);
       mealId = res.body.data[0].id;
       t.end();
@@ -70,7 +70,7 @@ test.cb('it should allow user to add a meal', (t) => {
 });
 
 test.cb('it should allow user to update meal details', (t) => {
-  let mealUpdateMock = _.omit(jsf(mealSchema.updateSchema), 'userId');
+  const mealUpdateMock = _.omit(jsf(mealSchema.updateSchema), 'userId');
   request(app)
     .put(`/users/${userId}/meals/${mealId}`)
     .set('Authorization', userToken)
@@ -78,10 +78,10 @@ test.cb('it should allow user to update meal details', (t) => {
     .send(mealUpdateMock)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.deepEqual(_.pick(res.body.data[0].attributes, _.keys(mealUpdateMock)), mealUpdateMock);
       t.end();
-    })
+    });
 });
 
 test.cb('it should allow user to view meal details', (t) => {
@@ -90,10 +90,10 @@ test.cb('it should allow user to view meal details', (t) => {
     .set('Authorization', userToken)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(_.isEqual(res.body.data[0].id, mealId));
       t.end();
-    })
+    });
 });
 
 test.cb('it should allow user to list meals belongs to his account', (t) => {
@@ -102,10 +102,10 @@ test.cb('it should allow user to list meals belongs to his account', (t) => {
     .set('Authorization', userToken)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(_.isEqual(res.body.data[0].id, mealId));
       t.end();
-    })
+    });
 });
 
 test.cb('it should allow user to delete meal belongs to user', (t) => {
@@ -124,7 +124,7 @@ test.cb('it should allow admin to add a meal to a user', (t) => {
     .send(mealMock)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(res.body.data[0].id);
       mealId = res.body.data[0].id;
       t.end();
@@ -137,10 +137,10 @@ test.cb('it should allow admin to list meals of a user', (t) => {
     .set('Authorization', adminToken)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(_.isEqual(res.body.data[0].id, mealId));
       t.end();
-    })
+    });
 });
 
 test.cb('it should allow admin to filter the list results', (t) => {
@@ -150,14 +150,14 @@ test.cb('it should allow admin to filter the list results', (t) => {
     .set('Authorization', adminToken)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(_.isEqual(res.body.data[0].id, mealId));
       t.end();
     });
 });
 
 test.cb('it should allow admin to update meal details of a user', (t) => {
-  let mealUpdateMock = _.omit(jsf(mealSchema.updateSchema), 'userId');
+  const mealUpdateMock = _.omit(jsf(mealSchema.updateSchema), 'userId');
   request(app)
     .put(`/users/${userId}/meals/${mealId}`)
     .set('Authorization', adminToken)
@@ -165,10 +165,10 @@ test.cb('it should allow admin to update meal details of a user', (t) => {
     .send(mealUpdateMock)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.deepEqual(_.pick(res.body.data[0].attributes, _.keys(mealUpdateMock)), mealUpdateMock);
       t.end();
-    })
+    });
 });
 
 test.cb('it should allow admin to view meal details of a user', (t) => {
@@ -177,10 +177,10 @@ test.cb('it should allow admin to view meal details of a user', (t) => {
     .set('Authorization', adminToken)
     .expect('Content-Type', /json/)
     .expect(200)
-    .then(res => {
+    .then((res) => {
       t.truthy(_.isEqual(res.body.data[0].id, mealId));
       t.end();
-    })
+    });
 });
 
 test.cb('it should allow admin to delete meal belongs to user', (t) => {

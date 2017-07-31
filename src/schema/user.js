@@ -13,7 +13,7 @@ const user = {
   roles: { type: 'string', 'm-default': 'user' },
   createdAt: { type: 'string', format: 'date-time' },
   updatedAt: { type: 'string', format: 'date-time' },
-  verification: { type: 'object' }
+  verification: { type: 'object' },
 };
 
 const postSchema = {
@@ -37,7 +37,7 @@ const updatePasswordSchema = {
 
 const resetPasswordSchema = {
   type: 'object',
-  properties: _.merge({code: {type: 'string'}}, _.pick(user, 'email')),
+  properties: _.merge({ code: { type: 'string' } }, _.pick(user, 'email')),
   additionalProperties: false,
 };
 

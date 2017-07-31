@@ -9,8 +9,8 @@ import _ from 'lodash';
 
 let dbConnection;
 let access;
-let mockData = jsf(schema.postSchema);
-let userSchema = mongooseSchema(schema.postSchema);
+const mockData = jsf(schema.postSchema);
+const userSchema = mongooseSchema(schema.postSchema);
 let accessId;
 let accessToken;
 
@@ -33,7 +33,7 @@ test.cb('it creates a new access log', (t) => {
     t.truthy(data.id);
     accessId = data.id;
     t.end();
-  })
+  });
 });
 
 test.cb('it updates an access log', (t) => {
@@ -41,29 +41,29 @@ test.cb('it updates an access log', (t) => {
   access.updateAccessLog(accessId, { expiresAt }).then((data) => {
     t.is(data.expiresAt, expiresAt);
     t.end();
-  })
+  });
 });
 
 test.cb('it gets an access log', (t) => {
   access.getAccessLog(accessId).then((data) => {
     t.is(data.id, accessId);
     t.end();
-  })
+  });
 });
 
 test.cb('it queries for an accesslog', (t) => {
   access.queryAccessLog(_.pick(mockData, 'userId')).then((data) => {
     t.is(data[0].id, accessId);
     t.end();
-  })
+  });
 });
 
 test.cb('it creates a jwt token', (t) => {
-  access.createJwtToken(_.merge(_.pick(mockData, 'userId')), {_id: '1234567890'}).then((data) => {
+  access.createJwtToken(_.merge(_.pick(mockData, 'userId')), { _id: '1234567890' }).then((data) => {
     t.truthy(data.access_token);
     accessToken = data.access_token;
     t.end();
-  })
+  });
 });
 
 test.cb('it validates a jwt token', (t) => {

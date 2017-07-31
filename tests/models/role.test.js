@@ -5,7 +5,7 @@ import config from 'common/config/config';
 import schema from 'schema/role';
 import mongooseSchema from 'common/helpers/mongooseSchema';
 
-let rolesSchema = mongooseSchema(schema.postSchema);
+const rolesSchema = mongooseSchema(schema.postSchema);
 let dbConnection;
 let role;
 
@@ -24,9 +24,9 @@ test.before.cb('it creates a new database connection', (t) => {
 
 test.cb('it checks if permissions exists', (t) => {
   role.checkPermission({
-    name: 'admin', permissions: 'users.write', level: 3
+    name: 'admin', permissions: 'users.write', level: 3,
   }).then((data) => {
     t.truthy((data || {}).id);
     t.end();
-  })
+  });
 });

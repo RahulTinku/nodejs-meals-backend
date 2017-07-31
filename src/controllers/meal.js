@@ -49,7 +49,7 @@ class MealController {
     const searchable = _.keys(this.jsonSchema.querySchema.properties);
     _.each(query.keys, (key) => {
       if (key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) {
-        throw new exceptions.InvalidInput({ message: [`${key} field is not searchable`]});
+        throw new exceptions.InvalidInput({ message: [`${key} field is not searchable`] });
       }
     });
     const input = typeof (query.query) === 'string' ? JSON.parse(query.query) : query.query;

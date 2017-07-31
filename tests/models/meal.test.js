@@ -10,9 +10,9 @@ import _ from 'lodash';
 let dbConnection;
 let meal;
 let mealId;
-let mockData = jsf(schema.postSchema);
-mockData.calories = parseInt(Math.random() * 100);
-let mealSchema = mongooseSchema(schema.postSchema);
+const mockData = jsf(schema.postSchema);
+mockData.calories = parseInt(Math.random() * 100, 10);
+const mealSchema = mongooseSchema(schema.postSchema);
 
 test.before.cb('it creates a new database connection', (t) => {
   dbConnection = new Connection(config.database);
@@ -32,7 +32,7 @@ test.cb('it adds a new meal for a user', (t) => {
     t.truthy(data.id);
     mealId = data.id;
     t.end();
-  })
+  });
 });
 
 test.cb('it updates a meal', (t) => {
@@ -40,14 +40,14 @@ test.cb('it updates a meal', (t) => {
   meal.updateMeal(mealId, { text }).then((data) => {
     t.is(data.text, text);
     t.end();
-  })
+  });
 });
 
 test.cb('it gets meal details', (t) => {
   meal.getMeal(mealId).then((data) => {
     t.is(data.id, mealId);
     t.end();
-  })
+  });
 });
 
 test.cb('it gets calories consumed for a day', (t) => {
@@ -57,26 +57,26 @@ test.cb('it gets calories consumed for a day', (t) => {
   }).then((data) => {
     t.is(data, mockData.calories);
     t.end();
-  })
+  });
 });
 
 test.cb('it queries a meal using userId', (t) => {
   meal.queryMeal(_.pick(mockData, 'userId')).then((data) => {
     t.is(data[0].id, mealId);
     t.end();
-  })
+  });
 });
 
 test.cb('it deletes a meal', (t) => {
   meal.deleteMeal(mealId).then((data) => {
     t.is(data.id, mealId);
     t.end();
-  })
+  });
 });
 
 test.cb('it fetches calorie information from nutritionix.com', (t) => {
   meal.getNutriCalories('salad').then((data) => {
     t.is(data, 19);
     t.end();
-  })
+  });
 });

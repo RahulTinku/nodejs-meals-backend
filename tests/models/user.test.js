@@ -9,8 +9,8 @@ import _ from 'lodash';
 
 let dbConnection;
 let user;
-let mockData = jsf(schema.postSchema);
-let userSchema = mongooseSchema(schema.postSchema);
+const mockData = jsf(schema.postSchema);
+const userSchema = mongooseSchema(schema.postSchema);
 let userId;
 let userHashPassword;
 
@@ -33,7 +33,7 @@ test.cb('it creates a new user', (t) => {
     t.truthy(data.id);
     userId = data.id;
     t.end();
-  })
+  });
 });
 
 test.cb('it updates an user', (t) => {
@@ -41,21 +41,21 @@ test.cb('it updates an user', (t) => {
   user.updateUser(userId, { phone: newPhone }).then((data) => {
     t.is(data.phone, newPhone);
     t.end();
-  })
+  });
 });
 
 test.cb('it gets an user', (t) => {
   user.getUser(userId).then((data) => {
     t.is(data.id, userId);
     t.end();
-  })
+  });
 });
 
 test.cb('it queries an user', (t) => {
   user.queryUser(_.pick(mockData, 'firstName')).then((data) => {
     t.is(data[0].id, userId);
     t.end();
-  })
+  });
 });
 
 test.cb('it encrypts password', (t) => {
@@ -74,12 +74,12 @@ test.cb.skip('it verifies login credentials', (t) => {
   user.verifyLogin(mockData.email, mockData.password).catch((err) => {
     t.is(err.message, 'User Not Active');
     t.end();
-  })
+  });
 });
 
 test.cb('it deletes an user', (t) => {
   user.deleteUser(userId).then((data) => {
     t.is(data.id, userId);
     t.end();
-  })
+  });
 });
