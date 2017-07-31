@@ -28,7 +28,9 @@ class User {
 
   updateUser(userId, input) {
     const updatedAt = { updatedAt: new Date().toISOString() };
-    return this.model.findByIdAndUpdate(userId, { $set: _.merge(updatedAt, input) }, { new: true });
+    const data = _.cloneDeep(input);
+    if(data.password) data.password = this.encryptPasswordString(data.password);
+    return this.model.findByIdAndUpdate(userId, { $set: _.merge(updatedAt, data) }, { new: true });
   }
 
   deleteUser(userId) {

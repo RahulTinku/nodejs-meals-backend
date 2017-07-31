@@ -13,6 +13,7 @@ const user = {
   roles: { type: 'string', 'm-default': 'user' },
   createdAt: { type: 'string', format: 'date-time' },
   updatedAt: { type: 'string', format: 'date-time' },
+  verification: { type: 'object' }
 };
 
 const postSchema = {
@@ -23,7 +24,25 @@ const postSchema = {
 
 const updateSchema = {
   type: 'object',
-  properties: _.pick(user, ['firstName', 'lastName', 'email', 'password', 'expectedCalories', 'phone']),
+  properties: _.pick(user, ['firstName', 'lastName', 'email', 'expectedCalories', 'phone']),
+  additionalProperties: false,
+};
+
+const updatePasswordSchema = {
+  type: 'object',
+  properties: { old: { type: 'string', minLength: 10 }, new: { type: 'string', minLength: 10 } },
+  additionalProperties: false,
+};
+
+const resetPasswordSchema = {
+  type: 'object',
+  properties: _.merge({code: {type: 'string'}}, _.pick(user, 'email')),
+  additionalProperties: false,
+};
+
+const forgotPasswordSchema = {
+  type: 'object',
+  properties: _.pick(user, ['email']),
   additionalProperties: false,
 };
 
@@ -35,7 +54,7 @@ const loginSchema = {
 
 const querySchema = {
   type: 'object',
-  properties: _.omit(user, ['password']),
+  properties: _.omit(user, ['password', 'verification']),
 };
 
 module.exports = {
@@ -44,4 +63,7 @@ module.exports = {
   tableName,
   loginSchema,
   querySchema,
+  updatePasswordSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 };

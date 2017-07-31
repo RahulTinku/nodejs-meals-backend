@@ -1,8 +1,12 @@
 const routes = (app, { user, access, role, meal }) => {
   app.post('/auth/login', user.validateLogin, access.performLogin);
+  app.post('/auth/forgot', user.forgotPassword);
+  app.post('/auth/reset', user.resetPassword);
+
   app.get('/users', access.verifyAuth, user.populateTokenUser, role.validateRole('users', 'read'), role.getNextLevelRoles, user.listUsers);
   app.post('/users', user.registerUser);
   app.put('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('users', 'update'), user.updateUser);
+  app.put('/users/:userId/password', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('users', 'update'), user.updatePassword);
   app.get('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('users', 'read'), user.showUser);
   app.delete('/users/:userId', access.verifyAuth, user.populateParamsUserId, user.populateTokenUser, role.validateRole('users', 'delete'), user.removeUser);
 

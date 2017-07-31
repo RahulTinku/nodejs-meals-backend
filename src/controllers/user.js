@@ -1,9 +1,12 @@
 const validator = require('common/helpers/validator');
 const _ = require('lodash');
+const Promise = require('bluebird');
 const exceptions = require('common/exceptions');
 const stringToQuery = require('common/helpers/stringToQuery');
 const Serializer = require('common/serializer');
 const config = require('common/config/config');
+const uuid = require('uuid/v4');
+const dateConverter = require('common/helpers/dateConverter');
 
 const serializer = new Serializer();
 
@@ -19,6 +22,9 @@ class UserController {
     this.removeUser = this.removeUser.bind(this);
     this.populateParamsUserId = this.populateParamsUserId.bind(this);
     this.populateTokenUser = this.populateTokenUser.bind(this);
+    this.updatePassword = this.updatePassword.bind(this);
+    this.forgotPassword = this.forgotPassword.bind(this);
+    this.resetPassword = this.resetPassword.bind(this);
   }
 
   registerUser(req, res, next) {
@@ -71,10 +77,55 @@ class UserController {
       .catch(error => next(error));
   }
 
+  updatePassword(req, res, next) {
+    const body = _.cloneDeep(req.body);
+    validator.buildParams({ input: body, schema: this.jsonSchema.updatePasswordSchema })
+      .then(input => validator.validate({ input, schema: this.jsonSchema.updatePasswordSchema }))
+      .then(input => Promise.all([this.model.verifyLogin(req.userId.email, input.old), input]))
+      .spread((data, input) => this.model.updateUser(req.userId._id, { password: input.new }))
+      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
+      .catch(error => next(error));
+  }
+
+  forgotPassword(req, res, next) {
+    const body = _.cloneDeep(req.body);
+    validator.buildParams({ input: body, schema: this.jsonSchema.forgotPasswordSchema })
+      .then(input => validator.validate({ input, schema: this.jsonSchema.forgotPasswordSchema }))
+      .then(input => this.model.queryUser(input))
+      .then(result => {
+        if(result && result[0]) {
+          const code = uuid();
+          const input = { verification: { code, expiry: dateConverter.addTimeIso(15, 'm'), attempts: 0, resendAttempt: 0 } };
+          return this.model.updateUser(result[0]._id, input);
+        } else {
+          throw new exceptions.NotFound();
+        }
+      })
+      .then(result => res.send(serializer.serialize()))
+      .catch(error => next(error));
+  }
+
+  resetPassword(req, res, next) {
+    const body = _.cloneDeep(req.body);
+    validator.buildParams({ input: body, schema: this.jsonSchema.resetPasswordSchema })
+      .then(input => validator.validate({ input, schema: this.jsonSchema.resetPasswordSchema }))
+      .then(input => this.model.queryUser({ 'verification.code': input.code, email: input.email }))
+      .then(result => {
+        if(result && result[0]) {
+          const code = uuid();
+          const input = { verification: {}, password: dateConverter.getRandomNumber(10).toString() };
+          return this.model.updateUser(result[0]._id, input);
+        } else {
+          throw new exceptions.NotFound();
+        }
+      })
+      .then(result => res.send(serializer.serialize()))
+      .catch(error => next(error));
+  }
+
   removeUser(req, res, next) {
     this.model.deleteUser(req.userId._id)
       .then(result => res.send(serializer.serialize(result, { type: 'users' })))
-
       .catch(error => next(error));
   }
 

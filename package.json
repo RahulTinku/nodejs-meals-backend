@@ -29,7 +29,8 @@
     "moment": "^2.18.1",
     "mongoose": "^4.11.4",
     "mongoose-unique-validator": "^1.0.5",
-    "nutritionix": "^0.6.1"
+    "nutritionix": "^0.6.1",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "ava": "^0.21.0",

@@ -16,6 +16,5 @@ module.exports = (jsonSchema) => {
     }
     if (properties[key]['m-default']) schema[key].default = properties[key]['m-default'];
   });
-
   return schema;
 };
