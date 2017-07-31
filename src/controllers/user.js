@@ -7,6 +7,7 @@ const Serializer = require('common/serializer');
 const config = require('common/config/config');
 const uuid = require('uuid/v4');
 const dateConverter = require('common/helpers/dateConverter');
+const mailer = require('common/mailer');
 
 const serializer = new Serializer();
 
@@ -32,6 +33,7 @@ class UserController {
     validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
       .then(input => this.model.createUser(input))
+      .then(input => mailer({to: input.email, userDetails: _.pick(input, 'firstName'), template: 'newUser'}))
       .then(result => res.send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }

@@ -30,6 +30,7 @@
     "mongoose": "^4.11.4",
     "mongoose-unique-validator": "^1.0.5",
     "nutritionix": "^0.6.1",
+    "sendgrid": "^5.2.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
