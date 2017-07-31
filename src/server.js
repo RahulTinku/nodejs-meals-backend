@@ -32,9 +32,9 @@ dbConnection.connect().then(() => {
   });
 
   // Start the server
-  const server = app.listen(config.server.port, () => {
+  const server = app.listen(config.server.port, (err) => {
     console.log(`Express server listening on port ${server.address().port}`);
-  });
+  }).on('error', function(err) { });
 });
 
 module.exports = app;

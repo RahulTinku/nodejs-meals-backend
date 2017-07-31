@@ -48,7 +48,9 @@ class MealController {
     const query = stringToQuery(req.query.filter);
     const searchable = _.keys(this.jsonSchema.querySchema.properties);
     _.each(query.keys, (key) => {
-      if (key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
+      if (key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) {
+        throw new exceptions.InvalidInput({ message: [`${key} field is not searchable`]});
+      }
     });
     const input = typeof (query.query) === 'string' ? JSON.parse(query.query) : query.query;
     input.userId = req.params.userId;
@@ -71,7 +73,7 @@ class MealController {
 
   removeMeal(req, res, next) {
     this.model.deleteMeal(req.params.mealId)
-      .then(() => res.send(serializer.serialize()))
+      .then(() => res.status(204).send(serializer.serialize()))
       .catch(error => next(error));
   }
 
