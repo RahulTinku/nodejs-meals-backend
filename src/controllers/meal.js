@@ -53,7 +53,7 @@ class MealController {
     _.each(query.keys, (key) => {
       if(key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
     });
-    const input = typeof (query.json) === 'string' ? JSON.parse(query.json) : query.json;
+    const input = typeof (query.query) === 'string' ? JSON.parse(query.query) : query.query;
     input.userId = req.params.userId;
     this.model.queryMeal(input, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
       .then(result => {

@@ -53,7 +53,7 @@ class UserController {
     _.each(query.keys, (key) => {
       if(key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
     });
-    const input = typeof (query.json) === 'string' ? JSON.parse(query.json) : query.json;
+    const input = typeof (query.query) === 'string' ? JSON.parse(query.query) : query.query;
     input.roles = { $in: req.user.nextLevelRoles };
     this.model.queryUser(input, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
       .then(result => {
