@@ -55,7 +55,7 @@ class UserController {
     });
     const input = typeof (query.query) === 'string' ? JSON.parse(query.query) : query.query;
     input.roles = { $in: req.user.nextLevelRoles };
-    this.model.queryUser(input, _.pick(req.query, ['order', 'sortby', 'page', 'limit']))
+    this.model.queryUser(input, _.merge({ sortby: 'updatedAt' }, _.pick(req.query, ['order', 'sortby', 'page', 'limit'])))
       .then(result => {
         const pagination = { pagination: _.merge({ limit: config.listing.limit }, req.query), type: 'users' };
         res.send(serializer.serialize(result, pagination))

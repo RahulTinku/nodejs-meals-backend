@@ -45,9 +45,11 @@ class User {
       if (Number(page) > 0) query = query.skip((limit || config.listing.limit ) * (page - 1));
       if (Number(limit) > 0) query = query.limit(Number(limit));
       if (sortby) {
-        const sort = {};
-        sort[sortby] = (order === 'asc' ? 1 : -1);
-        query = query.sort(sort);
+        _.each(sortby.split(','), (sortField) => {
+          const sort = {};
+          sort[sortField] = (order === 'asc' ? 1 : -1);
+          query = query.sort(sort);
+        })
       }
       query.find((err, data) => {
         if (err) reject(err);
