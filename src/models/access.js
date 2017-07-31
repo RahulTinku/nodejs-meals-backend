@@ -34,7 +34,7 @@ class Access {
         if (err) reject(err);
         else resolve(data);
       });
-    })
+    });
   }
 
   createJwtToken(input) {

@@ -3,8 +3,8 @@ const _ = require('lodash');
 const tableName = 'access';
 
 const access = {
-  userId: { type: 'string', },
-  expiresAt: { type: 'string', },
+  userId: { type: 'string' },
+  expiresAt: { type: 'string' },
 };
 
 const postSchema = {

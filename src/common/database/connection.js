@@ -3,7 +3,6 @@ const bluebird = require('bluebird');
 const logger = require('common/logger');
 
 class Connection {
-
   /**
    * Construct the connection class
    */
@@ -15,11 +14,12 @@ class Connection {
   }
 
   connect() {
-    return mongoose.connect(this.options.uri, { config: { autoIndex: false }, useMongoClient: true }).then(db => {
-      logger.info('Database connected');
-      this.db = db;
-      this.connectedStatus = true;
-    });
+    return mongoose.connect(this.options.uri, { config: { autoIndex: false }, useMongoClient: true })
+      .then((db) => {
+        logger.info('Database connected');
+        this.db = db;
+        this.connectedStatus = true;
+      });
   }
   isConnected() {
     return this.connectedStatus;

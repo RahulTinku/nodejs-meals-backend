@@ -1,6 +1,4 @@
 const Promise = require('bluebird');
-const _ = require('lodash');
-const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 
 class Role {
@@ -36,7 +34,6 @@ class Role {
   getJsonSchema() {
     return this.jsonSchema;
   }
-
 }
 
 module.exports = Role;

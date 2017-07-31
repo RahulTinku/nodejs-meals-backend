@@ -11,5 +11,5 @@ module.exports = {
   InvalidInput,
   UnAuthorized,
   NotFound,
-  PasswordMismatch
+  PasswordMismatch,
 };

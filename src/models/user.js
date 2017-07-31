@@ -39,29 +39,29 @@ class User {
     return this.model.findById(userId);
   }
 
-  queryUser(input, {page, limit, order, sortby} = {}) {
+  queryUser(input, { page, limit, order, sortby } = {}) {
     return new Promise((resolve, reject) => {
-      let query =  this.model.find(input);
-      if (Number(page) > 0) query = query.skip((limit || config.listing.limit ) * (page - 1));
+      let query = this.model.find(input);
+      if (Number(page) > 0) query = query.skip((limit || config.listing.limit) * (page - 1));
       if (Number(limit) > 0) query = query.limit(Number(limit));
       if (sortby) {
         _.each(sortby.split(','), (sortField) => {
           const sort = {};
           sort[sortField] = (order === 'asc' ? 1 : -1);
           query = query.sort(sort);
-        })
+        });
       }
       query.find((err, data) => {
         if (err) reject(err);
         else resolve(data);
       });
-    })
+    });
   }
 
   encryptPasswordString(string) {
     const hash = bcrypt.hashSync(string, this.salt);
     return hash.replace(this.salt, '');
-  };
+  }
 
   verifyPassword(passwordToTest, actualPassword) {
     return bcrypt.compareSync(passwordToTest, this.salt + actualPassword);
@@ -69,9 +69,9 @@ class User {
 
   verifyLogin(email, password) {
     return this.queryUser({ email }).then((data) => {
-      if(data.length === 0) throw new exceptions.NotFound();
-      if(!this.verifyPassword(password, data[0].password)) throw new exceptions.PasswordMismatch();
-      //if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
+      if (data.length === 0) throw new exceptions.NotFound();
+      if (!this.verifyPassword(password, data[0].password)) throw new exceptions.PasswordMismatch();
+      // if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
       return data[0];
     });
   }

@@ -16,10 +16,11 @@ class Serializer {
   }
 
   serialize(sourceData, { pagination = {}, type } = {}) {
-    let mapping = this.getMapping();
+    const mapping = this.getMapping();
     if (sourceData instanceof Error) {
       if (_.isArray(sourceData.detail)) {
-        mapping.errors = Serializer.processErrors(sourceData.detail, sourceData.message, sourceData.statusCode);
+        mapping.errors = Serializer.processErrors(sourceData.detail, sourceData.message,
+          sourceData.statusCode);
         mapping.meta = {
           errorCount: mapping.errors.length,
         };
@@ -36,7 +37,7 @@ class Serializer {
 
     if (_.isEmpty(sourceData)) return mapping;
 
-    if((!_.isEmpty(pagination)) && _.isArray(sourceData)) {
+    if ((!_.isEmpty(pagination)) && _.isArray(sourceData)) {
       mapping.meta = {
         count: sourceData.length,
       };
@@ -61,7 +62,6 @@ class Serializer {
   static processErrors(detail, code, status) {
     const result = [];
     _.each(detail, (error) => {
-
       let field = '';
       if (error.message && error.message.indexOf('pattern') === -1 && error.message.split('"').length > 1) {
         field = error.message.split('"')[1];

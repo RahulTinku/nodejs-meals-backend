@@ -1,5 +1,4 @@
 const validator = require('common/helpers/validator');
-const Promise = require('bluebird');
 const _ = require('lodash');
 const exceptions = require('common/exceptions');
 const stringToQuery = require('common/helpers/stringToQuery');
@@ -12,30 +11,28 @@ class MealController {
   constructor(model) {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
-    this.addMeal  = this.addMeal.bind(this);
-    this.listMeals  = this.listMeals.bind(this);
-    this.showMeal  = this.showMeal.bind(this);
-    this.updateMeal  = this.updateMeal.bind(this);
-    this.removeMeal  = this.removeMeal.bind(this);
-    this.verifyMealOwner  = this.verifyMealOwner.bind(this);
+    this.addMeal = this.addMeal.bind(this);
+    this.listMeals = this.listMeals.bind(this);
+    this.showMeal = this.showMeal.bind(this);
+    this.updateMeal = this.updateMeal.bind(this);
+    this.removeMeal = this.removeMeal.bind(this);
+    this.verifyMealOwner = this.verifyMealOwner.bind(this);
   }
 
   addMeal(req, res, next) {
-    const input = _.merge(req.body, { userId: req.userId.id });
-    validator.buildParams({ input, schema: this.jsonSchema.postSchema })
+    const body = _.merge(req.body, { userId: req.userId.id });
+    validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
       .then((input) => {
-        if(!input.calories){
-          return this.model.getNutriCalories(input.text).then(calories => _.merge(input, { calories }))
+        if (!input.calories) {
+          return this.model.getNutriCalories(input.text)
+            .then(calories => _.merge(input, { calories }));
         }
         return input;
       })
-      .then(input => {
-        return this.model.getConsumedCalorie(_.pick(input, ['userId', 'date']))
-          .then((consumedCalorie) => {
-            return _.merge(input, { dailyGoal: ((consumedCalorie + input.calories) < req.userId.expectedCalories) });
-          })
-      })
+      .then(input => this.model.getConsumedCalorie(_.pick(input, ['userId', 'date']))
+        .then(consumedCalorie => _.merge(input, {
+          dailyGoal: ((consumedCalorie + input.calories) < req.userId.expectedCalories) })))
       .then(input => this.model.addMeal(input))
       .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
       .catch(error => next(error));
@@ -51,14 +48,14 @@ class MealController {
     const query = stringToQuery(req.query.filter);
     const searchable = _.keys(this.jsonSchema.querySchema.properties);
     _.each(query.keys, (key) => {
-      if(key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
+      if (key !== '$or' && key !== '$and' && searchable.indexOf(key) === -1) throw new exceptions.InvalidInput();
     });
     const input = typeof (query.query) === 'string' ? JSON.parse(query.query) : query.query;
     input.userId = req.params.userId;
     this.model.queryMeal(input, _.merge({ sortby: 'date,time' }, _.pick(req.query, ['order', 'sortby', 'page', 'limit'])))
-      .then(result => {
+      .then((result) => {
         const pagination = { pagination: _.merge({ limit: config.listing.limit }, req.query), type: 'meals' };
-        res.send(serializer.serialize(result, pagination))
+        res.send(serializer.serialize(result, pagination));
       })
       .catch(error => next(error));
   }
@@ -74,14 +71,14 @@ class MealController {
 
   removeMeal(req, res, next) {
     this.model.deleteMeal(req.params.mealId)
-      .then(result => res.send(serializer.serialize()))
+      .then(() => res.send(serializer.serialize()))
       .catch(error => next(error));
   }
 
   verifyMealOwner(req, res, next) {
     this.model.getMeal(req.params.mealId)
-      .then(result => {
-        if(!result) next(new exceptions.NotFound());
+      .then((result) => {
+        if (!result) next(new exceptions.NotFound());
         else if (result.userId !== req.params.userId) next(new exceptions.UnAuthorized());
         else next();
       })

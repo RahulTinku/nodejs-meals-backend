@@ -10,33 +10,31 @@ const roleSchema = require('schema/role');
 const Meal = require('models/meal');
 const mealSchema = require('schema/meal');
 
-module.exports = (db) => {
-  return {
-    user: new User({
-      db,
-      schema: mongooseSchema(userSchema.postSchema),
-      tableName: userSchema.tableName,
-      salt: config.secret.passwordSalt,
-      jsonSchema: userSchema
-    }),
-    access: new Access({
-      db,
-      schema: mongooseSchema(accessSchema.postSchema),
-      tableName: accessSchema.tableName,
-      signature: config.secret.jwtSignature,
-      jsonSchema: accessSchema
-    }),
-    role: new Role({
-      db,
-      schema: mongooseSchema(roleSchema.postSchema),
-      tableName: roleSchema.tableName,
-      jsonSchema: roleSchema
-    }),
-    meal: new Meal({
-      db,
-      schema: mongooseSchema(mealSchema.postSchema),
-      tableName: mealSchema.tableName,
-      jsonSchema: mealSchema
-    })
-  };
-};
+module.exports = db => ({
+  user: new User({
+    db,
+    schema: mongooseSchema(userSchema.postSchema),
+    tableName: userSchema.tableName,
+    salt: config.secret.passwordSalt,
+    jsonSchema: userSchema,
+  }),
+  access: new Access({
+    db,
+    schema: mongooseSchema(accessSchema.postSchema),
+    tableName: accessSchema.tableName,
+    signature: config.secret.jwtSignature,
+    jsonSchema: accessSchema,
+  }),
+  role: new Role({
+    db,
+    schema: mongooseSchema(roleSchema.postSchema),
+    tableName: roleSchema.tableName,
+    jsonSchema: roleSchema,
+  }),
+  meal: new Meal({
+    db,
+    schema: mongooseSchema(mealSchema.postSchema),
+    tableName: mealSchema.tableName,
+    jsonSchema: mealSchema,
+  }),
+});
