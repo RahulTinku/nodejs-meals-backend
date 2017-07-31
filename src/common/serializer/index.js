@@ -19,7 +19,6 @@ class Serializer {
     let mapping = this.getMapping();
     if (sourceData instanceof Error) {
       if (_.isArray(sourceData.detail)) {
-        console.log(sourceData);
         mapping.errors = Serializer.processErrors(sourceData.detail, sourceData.message, sourceData.statusCode);
         mapping.meta = {
           errorCount: mapping.errors.length,

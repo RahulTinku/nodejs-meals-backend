@@ -29,7 +29,7 @@ const updateSchema = {
 
 const loginSchema = {
   type: 'object',
-  properties: _.cloneDeep(user),
+  properties: _.pick(user, ['email', 'password']),
   required: ['email', 'password'],
 };
 

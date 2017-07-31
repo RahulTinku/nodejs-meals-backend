@@ -12,7 +12,6 @@ class RoleController {
   }
 
   getNextLevelRoles(req, res, next) {
-    console.log('query', { level: { $gt: req.user.roleLevel } })
     this.model.queryRole({ level: { $gt: req.user.roleLevel } })
       .then(roleData => {
         req.user.nextLevelRoles = _.map(roleData, 'name');

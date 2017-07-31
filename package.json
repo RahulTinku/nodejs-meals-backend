@@ -32,6 +32,7 @@
     "nutritionix": "^0.6.1"
   },
   "devDependencies": {
-    "ava": "^0.21.0"
+    "ava": "^0.21.0",
+    "supertest": "^3.0.0"
   }
 }
