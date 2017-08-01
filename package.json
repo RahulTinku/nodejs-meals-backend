@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "engines": {
-    "node": ">=7.9.0"
+    "node": ">=6.10.0"
   },
   "scripts": {
     "start": "NODE_PATH=./src nodemon ./src/server.js",

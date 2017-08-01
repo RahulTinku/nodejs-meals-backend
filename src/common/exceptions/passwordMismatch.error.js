@@ -4,7 +4,7 @@ class PasswordMismatch extends Error {
     this.message = 'Password Mismatch';
     this.detail = [{ message: '"password" mismatch' }];
     this.name = this.constructor.name;
-    this.statusCode = 403;
+    this.statusCode = 401;
   }
 }
 

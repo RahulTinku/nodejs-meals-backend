@@ -10,7 +10,8 @@ let userToken;
 let userId;
 let adminToken;
 
-test.cb('it should allow to create a new user', (t) => {
+
+test.cb('POST /users - it should allow to create a new user', (t) => {
   request(app)
     .post('/users')
     .type('json')
@@ -23,7 +24,63 @@ test.cb('it should allow to create a new user', (t) => {
     });
 });
 
-test.cb('it should allow user to login', (t) => {
+test.cb('POST /users - it should throw error if exisiting email is used to create account', (t) => {
+  request(app)
+    .post('/users')
+    .type('json')
+    .send(userMock)
+    .expect('Content-Type', /json/)
+    .expect(409, t.end);
+});
+
+test.cb('POST /users - it should throw error if email field is missing', (t) => {
+  request(app)
+    .post('/users')
+    .type('json')
+    .send(_.omit(userMock, 'email'))
+    .expect('Content-Type', /json/)
+    .expect(400, t.end);
+});
+
+test.cb('POST /users - it should throw error if firstName field is missing', (t) => {
+  request(app)
+    .post('/users')
+    .type('json')
+    .send(_.omit(userMock, 'firstName'))
+    .expect('Content-Type', /json/)
+    .expect(400, t.end);
+});
+
+test.cb('POST /users - it should throw error if lastName field is missing', (t) => {
+  request(app)
+    .post('/users')
+    .type('json')
+    .send(_.omit(userMock, 'lastName'))
+    .expect('Content-Type', /json/)
+    .expect(400, t.end);
+});
+
+
+test.cb('POST /users - it should throw error if password field is missing', (t) => {
+  request(app)
+    .post('/users')
+    .type('json')
+    .send(_.omit(userMock, 'password'))
+    .expect('Content-Type', /json/)
+    .expect(400, t.end);
+});
+
+test.cb('POST /users - it should throw error if email field is malformed', (t) => {
+  request(app)
+    .post('/users')
+    .type('json')
+    .send(_.merge({email: 'abc'}, _.omit(userMock, 'email')))
+    .expect('Content-Type', /json/)
+    .expect(400, t.end);
+});
+
+
+test.cb('POST /auth/login - it should allow user to login', (t) => {
   request(app)
     .post('/auth/login')
     .type('json')
@@ -35,6 +92,33 @@ test.cb('it should allow user to login', (t) => {
       userToken = res.body.data[0].attributes.access_token;
       t.end();
     });
+});
+
+test.cb('POST /auth/login - it should throw error if email field is missing', (t) => {
+  request(app)
+    .post('/auth/login')
+    .type('json')
+    .send(_.pick(userMock, ['password']))
+    .expect('Content-Type', /json/)
+    .expect(400, t.end)
+});
+
+test.cb('POST /auth/login - it should throw error if password field is missing', (t) => {
+  request(app)
+    .post('/auth/login')
+    .type('json')
+    .send(_.pick(userMock, ['email']))
+    .expect('Content-Type', /json/)
+    .expect(400, t.end)
+});
+
+test.cb('POST /auth/login - it should throw error if credentials are incorrect', (t) => {
+  request(app)
+    .post('/auth/login')
+    .type('json')
+    .send({ email: '1@1.com', password: 'xxxxxxxxxx'})
+    .expect('Content-Type', /json/)
+    .expect(401, t.end)
 });
 
 test.cb('it should allow admin to login', (t) => {

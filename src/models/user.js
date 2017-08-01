@@ -23,14 +23,20 @@ class User {
     data.status = 'GUEST';
     data.roles = ['user'];
     data.password = this.encryptPasswordString(data.password);
-    return (new this.model(data)).save();
+    return (new this.model(data)).save().catch(err => {
+      const constructErrors = field => ({ message: `"${field}" should be unique` });
+      throw new exceptions.DuplicateRecord(Object.keys(err.errors).map(constructErrors));
+    });
   }
 
   updateUser(userId, input) {
     const updatedAt = { updatedAt: new Date().toISOString() };
     const data = _.cloneDeep(input);
     if (data.password) data.password = this.encryptPasswordString(data.password);
-    return this.model.findByIdAndUpdate(userId, { $set: _.merge(updatedAt, data) }, { new: true });
+    return this.model.findByIdAndUpdate(userId, { $set: _.merge(updatedAt, data) }, { new: true }).catch(err => {
+      const constructErrors = field => ({ message: `"${field}" should be unique` });
+      throw new exceptions.DuplicateRecord(Object.keys(err.errors).map(constructErrors));
+    });
   }
 
   deleteUser(userId) {
@@ -71,7 +77,7 @@ class User {
 
   verifyLogin(email, password) {
     return this.queryUser({ email }).then((data) => {
-      if (data.length === 0) throw new exceptions.NotFound();
+      if (data.length === 0) throw new exceptions.PasswordMismatch();
       if (!this.verifyPassword(password, data[0].password)) throw new exceptions.PasswordMismatch();
       // if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
       return data[0];
