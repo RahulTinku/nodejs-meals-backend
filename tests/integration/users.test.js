@@ -1,7 +1,7 @@
 import test from 'ava';
 import jsf from 'json-schema-faker';
 import request from 'supertest';
-import app from 'server';
+import { app, dbConnection } from 'server';
 import userSchema from 'schema/user';
 import _ from 'lodash';
 
@@ -17,11 +17,27 @@ test.cb('POST /users - it should allow to create a new user', (t) => {
     .type('json')
     .send(userMock)
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(201)
     .then((res) => {
       userId = res.body.data[0].id;
       t.end();
-    });
+    }).catch(err => console.log(err));
+});
+
+test.cb('POST /users - it should allow to activate the account', (t) => {
+  dbConnection.getModels().user.getUser(userId).then((userDetails) => {
+    request(app)
+      .put(`/users/${userId}/activate`)
+      .send({ code:  userDetails.verification.code})
+      .type('json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then((res) => {
+        t.is(res.body.data[0].id, userId);
+        t.is(res.body.data[0].attributes.status, 'ACTIVE');
+        t.end();
+      }).catch(err => console.log(err))
+  }).catch(err => console.log(err))
 });
 
 test.cb('POST /users - it should throw error if exisiting email is used to create account', (t) => {
@@ -142,7 +158,7 @@ test.cb('POST /users - it should allow admin to create a new active user', (t) =
     .set('Authorization', adminToken)
     .send(jsf(userSchema.postSchema))
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(201)
     .then((res) => {
       t.is(res.body.data[0].attributes.status, 'ACTIVE');
       t.end();

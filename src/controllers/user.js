@@ -16,6 +16,7 @@ class UserController {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
     this.registerUser = this.registerUser.bind(this);
+    this.activateUser = this.activateUser.bind(this);
     this.validateLogin = this.validateLogin.bind(this);
     this.listUsers = this.listUsers.bind(this);
     this.showUser = this.showUser.bind(this);
@@ -30,14 +31,16 @@ class UserController {
 
   registerUser(req, res, next) {
     const body = _.cloneDeep(req.body);
-    const preActivated = ((req.user || {}).roles !== 'user');
+    const preActivated = (((req.user || {}).roles) && (req.user || {}).roles !== 'user');
     validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
+      .then(input => _.merge(input, preActivated ? {} : { verification: {
+        code: uuid(), expiry: dateConverter.addTimeIso(2, 'd'), attempts: 0, resendAttempt: 0 } }))
       .then(input => this.model.createUser(input, preActivated))
-      .then(result => Promise.all([res.send(serializer.serialize(result, { type: 'users' })),
+      .then(result => Promise.all([res.status(201).send(serializer.serialize(result, { type: 'users' })),
         mailer({
           to: result.email,
-          userDetails: _.merge({ password: body.password }, _.pick(result, 'firstName')),
+          userDetails: _.merge({ password: body.password, code: (result.verification || {}).code }, _.pick(result, 'firstName')),
           template: preActivated ? 'activeNewUser' : 'newUser'
         })]))
       .catch(error => next(error));
@@ -53,9 +56,19 @@ class UserController {
       .catch(error => next(error));
   }
 
+  activateUser(req, res, next) {
+    if(req.userId.status === 'GUEST' && (req.userId.verification || {}).code === req.body.code) {
+      this.model.updateUser(req.userId._id, { status: 'ACTIVE', verification: {} })
+        .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
+        .catch(error => next(error));
+    } else {
+      next(new exceptions.UnAuthorized());
+    }
+  }
+
   showUser(req, res, next) {
     this.model.getUser(req.params.userId)
-      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
+      .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }
 
@@ -70,7 +83,7 @@ class UserController {
     this.model.queryUser(input, _.merge({ sortby: 'updatedAt' }, _.pick(req.query, ['order', 'sortby', 'page', 'limit'])))
       .then((result) => {
         const pagination = { pagination: _.merge({ limit: config.listing.limit }, req.query), type: 'users' };
-        res.send(serializer.serialize(result, pagination));
+        res.status(200).send(serializer.serialize(result, pagination));
       })
       .catch(error => next(error));
   }
@@ -80,7 +93,7 @@ class UserController {
     validator.buildParams({ input: body, schema: this.jsonSchema.updateSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.updateSchema }))
       .then(input => this.model.updateUser(req.userId._id, input))
-      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
+      .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }
 
@@ -90,7 +103,7 @@ class UserController {
       .then(input => validator.validate({ input, schema: this.jsonSchema.updatePasswordSchema }))
       .then(input => Promise.all([this.model.verifyLogin(req.userId.email, input.old), input]))
       .spread((data, input) => this.model.updateUser(req.userId._id, { password: input.new }))
-      .then(result => res.send(serializer.serialize(result, { type: 'users' })))
+      .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }
 
@@ -126,7 +139,7 @@ class UserController {
         }
         throw new exceptions.NotFound();
       })
-      .then(result => res.send(serializer.serialize()))
+      .then(result => res.status(200).send(serializer.serialize()))
       .catch(error => next(error));
   }
 

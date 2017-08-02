@@ -23,19 +23,32 @@ class MealController {
     const body = _.merge(req.body, { userId: req.userId.id });
     validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
-      .then((input) => {
-        if (!input.calories) {
-          return this.model.getNutriCalories(input.text)
-            .then(calories => _.merge(input, { calories, autoFetch: true, }));
-        }
-        return input;
-      })
-      .then(input => this.model.getConsumedCalorie(_.pick(input, ['userId', 'date']))
-        .then(consumedCalorie => _.merge(input, {
-          dailyGoal: ((consumedCalorie + input.calories) < req.userId.expectedCalories) })))
+      .then((input) => _.merge(input, { autoFetch: (!input.calories) }))
       .then(input => this.model.addMeal(input))
-      .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
+      .then(result => Promise.all([res.status(result.calories ? 200 : 202).send(serializer.serialize(result, { type: 'meals' })),
+        this.updateCaloriesAndDailyGoal({expCal: Number(req.userId.expectedCalories), id: result.id })
+      ]))
       .catch(error => next(error));
+  }
+
+  updateCaloriesAndDailyGoal(input) {
+    // { id(mealId): '', expCal: number }
+    return this.model.getMeal(input.id)
+      .then((meal) => {
+        let updatePromise = Promise.resolve(meal);
+        if(meal.autoFetch) {
+          updatePromise = updatePromise.then((mealDetails) => {
+            return this.model.getNutriCalories(mealDetails.text)
+              .then(calories => _.merge(mealDetails, { calories }));
+          })
+        }
+        return updatePromise.then((mealDetails) => {
+          return this.model.getConsumedCalorie(_.pick(mealDetails, ['userId', 'date']))
+            .then(consumedCalorie => this.model.updateMeal(mealDetails.id, _.merge(_.pick(mealDetails, 'calories'), {
+              dailyGoal: ((consumedCalorie + (mealDetails.calories || 0)) < input.expCal)
+            })));
+        });
+      });
   }
 
   showMeal(req, res, next) {
@@ -66,16 +79,11 @@ class MealController {
     const input = _.merge(req.body, { userId: req.userId.id });
     validator.buildParams({ input, schema: this.jsonSchema.updateSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.updateSchema }))
+      .then(input => (input.calories ? _.merge(input, { autoFetch: false }) : input))
       .then(input => this.model.updateMeal(req.params.mealId, input))
-      .then(result => {
-        if(result.autoFetch && input.text && !input.calories) {
-          return this.model.getNutriCalories(input.text)
-            .then(calories => _.merge(input, { calories }))
-            .then(updatedInput => this.model.updateMeal(req.params.mealId, updatedInput));
-        }
-        return result;
-      })
-      .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
+      .then(result => Promise.all([res.status(result.autoFetch ? 202 : 200).send(serializer.serialize(result, { type: 'meals' })),
+        this.updateCaloriesAndDailyGoal({expCal: Number(req.userId.expectedCalories), id: result.id })
+      ]))
       .catch(error => next(error));
   }
 

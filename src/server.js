@@ -11,12 +11,14 @@ const Serializer = require('common/serializer');
 const app = express();
 const serializer = new Serializer();
 const dbConnection = new Connection(config.database);
+let dbModels;
+dbConnection.getModels = () => dbModels;
 
 dbConnection.connect().then(() => {
   app.use(bodyParser.json());
   app.all('/*', middlewares.enableCors);
-
-  routes(app, controllers(models(dbConnection.db)));
+  dbModels = models(dbConnection.db);
+  routes(app, controllers(dbModels));
 
   // If no route is matched by now, it must be a 404
   app.use((req, res, next) => {
@@ -37,4 +39,7 @@ dbConnection.connect().then(() => {
   }).on('error', (err) => { });
 });
 
-module.exports = app;
+module.exports = {
+  app,
+  dbConnection
+};

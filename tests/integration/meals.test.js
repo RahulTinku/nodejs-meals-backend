@@ -1,7 +1,7 @@
 import test from 'ava';
 import jsf from 'json-schema-faker';
 import request from 'supertest';
-import app from 'server';
+import { app, dbConnection } from 'server';
 import userSchema from 'schema/user';
 import mealSchema from 'schema/meal';
 import _ from 'lodash';
@@ -19,11 +19,27 @@ test.cb.before('it should allow to create a new user', (t) => {
     .type('json')
     .send(userMock)
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(201)
     .then((res) => {
       userId = res.body.data[0].id;
       t.end();
     });
+});
+
+test.cb.before('it should allow to activate the account', (t) => {
+  dbConnection.getModels().user.getUser(userId).then((userDetails) => {
+    request(app)
+      .put(`/users/${userId}/activate`)
+      .send({ code:  userDetails.verification.code})
+      .type('json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then((res) => {
+        t.is(res.body.data[0].id, userId);
+        t.is(res.body.data[0].attributes.status, 'ACTIVE');
+        t.end();
+      }).catch(err => console.log(err))
+  }).catch(err => console.log(err))
 });
 
 test.cb.before('it should allow user to login', (t) => {
@@ -122,11 +138,22 @@ test.cb('it should allow user to add a meal without calories & calories get auto
     .type('json')
     .send(_.merge({ text: 'salad' }, _.omit(mealMock, ['text', 'calories'])))
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(202)
     .then((res) => {
-      t.is(res.body.data[0].attributes.calories, 19);
       mealId = res.body.data[0].id;
-      t.end();
+      const afterWait = () => {
+        request(app)
+          .get(`/users/${userId}/meals/${mealId}`)
+          .set('Authorization', userToken)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then((res) => {
+            t.is(res.body.data[0].attributes.calories, 19);
+            t.truthy(_.isEqual(res.body.data[0].id, mealId));
+            t.end();
+          })
+      }
+      setTimeout(afterWait, 3000);
     }).catch(err => console.log(err));
 });
 
@@ -137,10 +164,21 @@ test.cb('it should allow user to update a meal(calorie auto calculated) & calori
     .type('json')
     .send({ text: 'sugar' })
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(202)
     .then((res) => {
-      t.is(res.body.data[0].attributes.calories, 16);
-      t.end();
+      const afterWait = () => {
+        request(app)
+          .get(`/users/${userId}/meals/${mealId}`)
+          .set('Authorization', userToken)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then((res) => {
+            t.is(res.body.data[0].attributes.calories, 16);
+            t.truthy(_.isEqual(res.body.data[0].id, mealId));
+            t.end();
+          })
+      };
+      setTimeout(afterWait, 3000);
     }).catch(err => console.log(err));
 });
 

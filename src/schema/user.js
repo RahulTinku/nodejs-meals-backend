@@ -9,7 +9,7 @@ const user = {
   lastName: { type: 'string', pattern: '^([a-zA-Z]+)$' },
   email: { type: 'string', format: 'email', 'm-unique': true },
   status: { type: 'string', enum: ['GUEST', 'ACTIVE', 'BLOCKED'] },
-  expectedCalories: { type: 'number' },
+  expectedCalories: { type: 'number', 'm-default': 2000 },
   roles: { type: 'string', 'm-default': 'user' },
   createdAt: { type: 'string', format: 'date-time' },
   updatedAt: { type: 'string', format: 'date-time' },
