@@ -1,0 +1,343 @@
+#%RAML 1.0
+title: API
+version: v1
+protocols: [ HTTPS ]
+baseUri: http://myapi.mysite.com/api/{version}
+mediaType: application/json
+
+types:
+  user-create: !include includes/schemas/post.users.json
+  forgot-password-req: !include includes/schemas/post.auth.forgot-password.json
+  forgot-password-res: !include includes/schemas/post.auth.forgot-password.json
+
+securitySchemes:
+  jwt:
+    description: |
+      Authorization with jwt token
+    type: x-jwt
+    describedBy:
+      headers:
+        Authorization:
+          description: |
+             Valid jwt token
+          example: |
+            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
+      responses:
+        401:
+          description: |
+            Bad or expired token.
+        403:
+          description: |
+            Access denied not valid privilage in resurces
+
+/auth:
+  description: Handles login, reset password, forgot password
+  /forgot-password:
+    description: Initiate forgot password.
+    post:
+      securedBy: [jwt]
+      description: Initiate forgot password email
+      queryParameters:
+        title:
+          description: "The access token provided by the authentication application"
+          example: AABBCCDD
+          required: false
+          type: string
+      body:
+        application/json:
+          type: forgot-password-req
+          example: !include includes/examples/post.auth.forgot-password.req.json
+      responses:
+        200:
+          body:
+            application/json:
+              type: forgot-password-res
+              example: !include includes/examples/post.auth.forgot-password.res.json
+
+  /login:
+    post:
+      securedBy: [jwt]
+      description: Initiate forgot password email
+      queryParameters:
+        title:
+          description: "The access token provided by the authentication application"
+          example: AABBCCDD
+          required: false
+          type: string
+      body:
+        application/json:
+          type: forgot-password-req
+          example: !include includes/examples/post.auth.forgot-password.req.json
+      responses:
+        200:
+          body:
+            application/json:
+              type: forgot-password-res
+              example: !include includes/examples/post.auth.forgot-password.res.json
+
+  /reset-password:
+    post:
+      securedBy: [jwt]
+      description: Initiate forgot password email
+      queryParameters:
+        title:
+          description: "The access token provided by the authentication application"
+          example: AABBCCDD
+          required: false
+          type: string
+      body:
+        application/json:
+          type: forgot-password-req
+          example: !include includes/examples/post.auth.forgot-password.req.json
+      responses:
+        200:
+          body:
+            application/json:
+              type: forgot-password-res
+              example: !include includes/examples/post.auth.forgot-password.res.json
+
+/users:
+  get:
+    securedBy: [jwt]
+    description: Initiate forgot password email
+    queryParameters:
+      title:
+        description: "The access token provided by the authentication application"
+        example: AABBCCDD
+        required: false
+        type: string
+    body:
+      application/json:
+        type: forgot-password-req
+        example: !include includes/examples/post.auth.forgot-password.req.json
+    responses:
+      200:
+        body:
+          application/json:
+            type: forgot-password-res
+            example: !include includes/examples/post.auth.forgot-password.res.json
+
+  post:
+    securedBy: [jwt]
+    description: Initiate forgot password email
+    queryParameters:
+      title:
+        description: "The access token provided by the authentication application"
+        example: AABBCCDD
+        required: false
+        type: string
+    body:
+      application/json:
+        type: forgot-password-req
+        example: !include includes/examples/post.auth.forgot-password.req.json
+    responses:
+      200:
+        body:
+          application/json:
+            type: forgot-password-res
+            example: !include includes/examples/post.auth.forgot-password.res.json
+
+  /{userId}:
+    put:
+      securedBy: [jwt]
+      description: Initiate forgot password email
+      queryParameters:
+        title:
+          description: "The access token provided by the authentication application"
+          example: AABBCCDD
+          required: false
+          type: string
+      body:
+        application/json:
+          type: forgot-password-req
+          example: !include includes/examples/post.auth.forgot-password.req.json
+      responses:
+        200:
+          body:
+            application/json:
+              type: forgot-password-res
+              example: !include includes/examples/post.auth.forgot-password.res.json
+
+    get:
+      securedBy: [jwt]
+      description: Initiate forgot password email
+      queryParameters:
+        title:
+          description: "The access token provided by the authentication application"
+          example: AABBCCDD
+          required: false
+          type: string
+      body:
+        application/json:
+          type: forgot-password-req
+          example: !include includes/examples/post.auth.forgot-password.req.json
+      responses:
+        200:
+          body:
+            application/json:
+              type: forgot-password-res
+              example: !include includes/examples/post.auth.forgot-password.res.json
+
+    delete:
+      securedBy: [jwt]
+      description: Initiate forgot password email
+      queryParameters:
+        title:
+          description: "The access token provided by the authentication application"
+          example: AABBCCDD
+          required: false
+          type: string
+      body:
+        application/json:
+          type: forgot-password-req
+          example: !include includes/examples/post.auth.forgot-password.req.json
+      responses:
+        200:
+          body:
+            application/json:
+              type: forgot-password-res
+              example: !include includes/examples/post.auth.forgot-password.res.json
+
+    /activate:
+      put:
+        securedBy: [jwt]
+        description: Initiate forgot password email
+        queryParameters:
+          title:
+            description: "The access token provided by the authentication application"
+            example: AABBCCDD
+            required: false
+            type: string
+        body:
+          application/json:
+            type: forgot-password-req
+            example: !include includes/examples/post.auth.forgot-password.req.json
+        responses:
+          200:
+            body:
+              application/json:
+                type: forgot-password-res
+                example: !include includes/examples/post.auth.forgot-password.res.json
+
+    /update-password:
+      put:
+        securedBy: [jwt]
+        description: Initiate forgot password email
+        queryParameters:
+          title:
+            description: "The access token provided by the authentication application"
+            example: AABBCCDD
+            required: false
+            type: string
+        body:
+          application/json:
+            type: forgot-password-req
+            example: !include includes/examples/post.auth.forgot-password.req.json
+        responses:
+          200:
+            body:
+              application/json:
+                type: forgot-password-res
+                example: !include includes/examples/post.auth.forgot-password.res.json
+
+    /meals:
+      get:
+        securedBy: [jwt]
+        description: Initiate forgot password email
+        queryParameters:
+          title:
+            description: "The access token provided by the authentication application"
+            example: AABBCCDD
+            required: false
+            type: string
+        body:
+          application/json:
+            type: forgot-password-req
+            example: !include includes/examples/post.auth.forgot-password.req.json
+        responses:
+          200:
+            body:
+              application/json:
+                type: forgot-password-res
+                example: !include includes/examples/post.auth.forgot-password.res.json
+
+      post:
+        securedBy: [jwt]
+        description: Initiate forgot password email
+        queryParameters:
+          title:
+            description: "The access token provided by the authentication application"
+            example: AABBCCDD
+            required: false
+            type: string
+        body:
+          application/json:
+            type: forgot-password-req
+            example: !include includes/examples/post.auth.forgot-password.req.json
+        responses:
+          200:
+            body:
+              application/json:
+                type: forgot-password-res
+                example: !include includes/examples/post.auth.forgot-password.res.json
+
+      /{mealId}:
+        put:
+          securedBy: [jwt]
+          description: Initiate forgot password email
+          queryParameters:
+            title:
+              description: "The access token provided by the authentication application"
+              example: AABBCCDD
+              required: false
+              type: string
+          body:
+            application/json:
+              type: forgot-password-req
+              example: !include includes/examples/post.auth.forgot-password.req.json
+          responses:
+            200:
+              body:
+                application/json:
+                  type: forgot-password-res
+                  example: !include includes/examples/post.auth.forgot-password.res.json
+
+        get:
+          securedBy: [jwt]
+          description: Initiate forgot password email
+          queryParameters:
+            title:
+              description: "The access token provided by the authentication application"
+              example: AABBCCDD
+              required: false
+              type: string
+          body:
+            application/json:
+              type: forgot-password-req
+              example: !include includes/examples/post.auth.forgot-password.req.json
+          responses:
+            200:
+              body:
+                application/json:
+                  type: forgot-password-res
+                  example: !include includes/examples/post.auth.forgot-password.res.json
+
+        delete:
+          securedBy: [jwt]
+          description: Initiate forgot password email
+          queryParameters:
+            title:
+              description: "The access token provided by the authentication application"
+              example: AABBCCDD
+              required: false
+              type: string
+          body:
+            application/json:
+              type: forgot-password-req
+              example: !include includes/examples/post.auth.forgot-password.req.json
+          responses:
+            200:
+              body:
+                application/json:
+                  type: forgot-password-res
+                  example: !include includes/examples/post.auth.forgot-password.res.json
