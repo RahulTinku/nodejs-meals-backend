@@ -67,7 +67,8 @@ class Meal {
   }
 
   getNutriCalories(food) {
-    return this.nutritionix.natural(food).then(data => parseInt(_.find(data.results[0].nutrients, { usda_tag: 'ENERC_KCAL' }).value || 0, 10));
+    return this.nutritionix.natural(food).then(data => parseInt(_.find(data.results[0].nutrients, { usda_tag: 'ENERC_KCAL' }).value || 0, 10))
+      .catch(() => (0));
   }
 
   getJsonSchema() {

@@ -1,7 +1,7 @@
 const _ = require('lodash');
 
 const processQuery = (input) => {
-  let queryString = _.cloneDeep(input);
+  let queryString = trimSpaces(input);
   let regEx = /([a-z_]+)( eq | ne | gt | lt )([a-z0-9_$\-'",\.\\\[\]\{\}\: ]+)/gi;
   const regEx1 = new RegExp(regEx);
   const keys = [];
@@ -27,6 +27,14 @@ const processQuery = (input) => {
     }
   }
   return { query: JSON.parse(queryString.replace(/^(\()(.*)(\))$/, '$2')), keys };
+};
+
+const trimSpaces = (input) => {
+  if(typeof input !== 'string') return '';
+  let result = _.cloneDeep(input);
+  const regEx = [{ regEx: /(\()( )/g, char: '(' }, { regEx: /( )(\))/g, char: ')' }];
+  regEx.forEach((reg) => (result = result.replace(reg.regEx, reg.char)));
+  return result;
 };
 
 module.exports = processQuery;
