@@ -115,6 +115,34 @@ test.cb('it should allow user to delete meal belongs to user', (t) => {
     .expect(204, t.end);
 });
 
+test.cb('it should allow user to add a meal without calories & calories get auto-calculated', (t) => {
+  request(app)
+    .post(`/users/${userId}/meals`)
+    .set('Authorization', userToken)
+    .type('json')
+    .send(_.merge({ text: 'salad' }, _.omit(mealMock, ['text', 'calories'])))
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .then((res) => {
+      t.is(res.body.data[0].attributes.calories, 19);
+      mealId = res.body.data[0].id;
+      t.end();
+    }).catch(err => console.log(err));
+});
+
+test.cb('it should allow user to update a meal(calorie auto calculated) & calories get auto-calculated', (t) => {
+  request(app)
+    .put(`/users/${userId}/meals/${mealId}`)
+    .set('Authorization', userToken)
+    .type('json')
+    .send({ text: 'sugar' })
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .then((res) => {
+      t.is(res.body.data[0].attributes.calories, 16);
+      t.end();
+    }).catch(err => console.log(err));
+});
 
 test.cb('it should allow admin to add a meal to a user', (t) => {
   request(app)
@@ -138,7 +166,7 @@ test.cb('it should allow admin to list meals of a user', (t) => {
     .expect('Content-Type', /json/)
     .expect(200)
     .then((res) => {
-      t.truthy(_.isEqual(res.body.data[0].id, mealId));
+      t.truthy(_.isEqual(res.body.data[1].id, mealId));
       t.end();
     });
 });

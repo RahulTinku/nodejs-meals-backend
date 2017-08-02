@@ -9,6 +9,7 @@ const meal = {
   dailyGoal: { type: 'boolean', 'm-default': true },
   date: { type: 'string', pattern: '^(19|20)\\d\\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$' },
   time: { type: 'string', pattern: '^(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9]$' },
+  autoFetch: { type: 'boolean', 'm-default': false },
   createdAt: { type: 'string', format: 'date-time' },
   updatedAt: { type: 'string', format: 'date-time' },
 };

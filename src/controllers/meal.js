@@ -26,7 +26,7 @@ class MealController {
       .then((input) => {
         if (!input.calories) {
           return this.model.getNutriCalories(input.text)
-            .then(calories => _.merge(input, { calories }));
+            .then(calories => _.merge(input, { calories, autoFetch: true, }));
         }
         return input;
       })
@@ -67,6 +67,14 @@ class MealController {
     validator.buildParams({ input, schema: this.jsonSchema.updateSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.updateSchema }))
       .then(input => this.model.updateMeal(req.params.mealId, input))
+      .then(result => {
+        if(result.autoFetch && input.text && !input.calories) {
+          return this.model.getNutriCalories(input.text)
+            .then(calories => _.merge(input, { calories }))
+            .then(updatedInput => this.model.updateMeal(req.params.mealId, updatedInput));
+        }
+        return result;
+      })
       .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
       .catch(error => next(error));
   }
