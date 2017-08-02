@@ -16,11 +16,11 @@ class User {
     this.jsonSchema = options.jsonSchema;
   }
 
-  createUser(input) {
+  createUser(input, preActivated) {
     const data = _.cloneDeep(input);
     data.createdAt = new Date().toISOString();
     data.updatedAt = new Date().toISOString();
-    data.status = 'GUEST';
+    data.status = preActivated ? 'ACTIVE' : 'GUEST';
     data.roles = ['user'];
     data.password = this.encryptPasswordString(data.password);
     return (new this.model(data)).save().catch(err => {

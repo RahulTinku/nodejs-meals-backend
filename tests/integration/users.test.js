@@ -135,6 +135,20 @@ test.cb('it should allow admin to login', (t) => {
     });
 });
 
+test.cb('POST /users - it should allow admin to create a new active user', (t) => {
+  request(app)
+    .post('/users')
+    .type('json')
+    .set('Authorization', adminToken)
+    .send(jsf(userSchema.postSchema))
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .then((res) => {
+      t.is(res.body.data[0].attributes.status, 'ACTIVE');
+      t.end();
+    });
+});
+
 test.cb('it should allow user to view user profile', (t) => {
   request(app)
     .get(`/users/${userId}`)

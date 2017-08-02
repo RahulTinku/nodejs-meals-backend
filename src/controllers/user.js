@@ -30,11 +30,16 @@ class UserController {
 
   registerUser(req, res, next) {
     const body = _.cloneDeep(req.body);
+    const preActivated = ((req.user || {}).roles !== 'user');
     validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
-      .then(input => this.model.createUser(input))
+      .then(input => this.model.createUser(input, preActivated))
       .then(result => Promise.all([res.send(serializer.serialize(result, { type: 'users' })),
-        mailer({to: result.email, userDetails: _.pick(result, 'firstName'), template: 'newUser'})]))
+        mailer({
+          to: result.email,
+          userDetails: _.merge({ password: body.password }, _.pick(result, 'firstName')),
+          template: preActivated ? 'activeNewUser' : 'newUser'
+        })]))
       .catch(error => next(error));
   }
 
@@ -139,14 +144,18 @@ class UserController {
     }).catch(error => next(error));
   }
 
-  populateTokenUser(req, res, next) {
-    this.model.getUser(req.authToken.userId).then((userData) => {
-      if (!userData) next(new exceptions.UnAuthorized());
+  populateTokenUser(optional) {
+    return (req, res, next) => {
+      if (optional && !req.authToken) next();
       else {
-        req.user = userData;
-        next();
+        this.model.getUser(req.authToken.userId).then((userData) => {
+          if (!userData) next(new exceptions.UnAuthorized()); else {
+            req.user = userData;
+            next();
+          }
+        });
       }
-    });
+    }
   }
 }
 

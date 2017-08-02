@@ -23,14 +23,17 @@ class AccessController {
       .catch(error => next(error));
   }
 
-  verifyAuth(req, res, next) {
-    const input = req.headers.authorization;
-    if (!input) next(new exceptions.UnAuthorized());
-    else {
-      this.model.verifyToken(input)
-        .then(result => (req.authToken = result))
-        .then(() => next())
-        .catch(error => next(error));
+  verifyAuth(optional) {
+    return (req, res, next) => {
+      const input = req.headers.authorization;
+      if (optional && !input) next();
+      else if (!input) next(new exceptions.UnAuthorized());
+      else {
+        this.model.verifyToken(input)
+          .then(result => (req.authToken = result))
+          .then(() => next())
+          .catch(error => next(error));
+      }
     }
   }
 }

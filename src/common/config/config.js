@@ -30,6 +30,10 @@ module.exports = {
           subject: 'Verify your account',
           templateId: '4a4cb1f4-bbff-4d52-89ff-0804e500ece9'
         },
+        activeNewUser: {
+          subject: 'New account details',
+          templateId: 'ca92cef7-f790-4111-b72c-d7e686133c68'
+        },
         forgotPassword: {
           subject: 'Password Reset',
           templateId: 'a0624261-3f89-495d-b60e-434e7a8e751a',
