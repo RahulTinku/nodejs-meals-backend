@@ -1,5 +1,8 @@
 const Promise = require('bluebird');
 const mongoose = require('mongoose');
+const _ = require('lodash');
+const exceptions = require('common/exceptions');
+const uniqueValidator = require('mongoose-unique-validator');
 
 class Role {
   /**
@@ -15,8 +18,25 @@ class Role {
   constructor(options) {
     this.db = options.db;
     this.schema = new mongoose.Schema(options.schema);
+    this.schema.plugin(uniqueValidator);
     this.model = this.db.model(options.tableName, this.schema);
     this.jsonSchema = options.jsonSchema;
+  }
+
+  /**
+   * Adds a new role
+   *
+   * @param input
+   * @returns {*|Promise}
+   */
+  addRole(input) {
+    const data = _.cloneDeep(input);
+    data.createdAt = new Date().toISOString();
+    data.updatedAt = new Date().toISOString();
+    return (new this.model(data)).save().catch(err => {
+      const constructErrors = field => ({ message: `"${field}" should be unique` });
+      throw new exceptions.DuplicateRecord(Object.keys(err.errors).map(constructErrors));
+    });
   }
 
   /**

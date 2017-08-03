@@ -39,7 +39,7 @@ class User {
     data.createdAt = new Date().toISOString();
     data.updatedAt = new Date().toISOString();
     data.status = preActivated ? 'ACTIVE' : 'GUEST';
-    data.roles = ['user'];
+    data.roles = 'user';
     data.password = this.encryptPasswordString(data.password);
     return (new this.model(data)).save().catch(err => {
       const constructErrors = field => ({ message: `"${field}" should be unique` });
