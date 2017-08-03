@@ -101,7 +101,6 @@ securitySchemes:
           application/json:
             example: !include includes/examples/get.users.res.json
   post:
-    securedBy: [null, jwt]
     description: Create new user
     body:
       application/json:
@@ -154,7 +153,7 @@ securitySchemes:
             body:
               application/json:
                 example: !include includes/examples/put.users.activate.res.json
-    /update-password:
+    /password:
       put:
         securedBy: [jwt]
         description: Update a user's password using user's token

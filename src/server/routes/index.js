@@ -1,7 +1,7 @@
 const routes = (app, { user, access, role, meal }) => {
   app.post('/auth/login', user.validateLogin, access.performLogin);
-  app.post('/auth/forgot', user.forgotPassword);
-  app.post('/auth/reset', user.resetPassword);
+  app.post('/auth/forgot-password', user.forgotPassword);
+  app.post('/auth/reset-password', user.resetPassword);
 
   app.get('/users', access.verifyAuth(), user.populateTokenUser(), role.validateRole('users', 'read'), role.getNextLevelRoles, user.listUsers);
   app.post('/users', access.verifyAuth(true), user.populateTokenUser(true), user.registerUser);

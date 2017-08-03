@@ -209,7 +209,7 @@ test.cb('it should allow user to update user password', (t) => {
 
 test.cb('it should allow user initiate forgot password', (t) => {
   request(app)
-    .post('/auth/forgot')
+    .post('/auth/forgot-password')
     .type('json')
     .send(_.pick(userMock, 'email'))
     .expect('Content-Type', /json/)
@@ -218,7 +218,7 @@ test.cb('it should allow user initiate forgot password', (t) => {
 
 test.cb('it should allow user reset password', (t) => {
   request(app)
-    .post('/auth/reset')
+    .post('/auth/reset-password')
     .type('json')
     .send(_.pick(userMock, 'email'))
     .expect('Content-Type', /json/)
