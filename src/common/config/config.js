@@ -5,7 +5,8 @@ module.exports = {
     status: 'test' //test || live
   },
   database: {
-    uri: 'mongodb://localhost:27017/calories',
+    //uri: 'mongodb://localhost:27017/calories',
+    uri: 'mongodb://devuser:sadfasdfgdf@ds123933.mlab.com:23933/calories',
     table: '',
   },
   logger: {

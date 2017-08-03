@@ -11,7 +11,7 @@
   },
   "scripts": {
     "docs": "raml2html -i docs/raml/api.raml -o api.html",
-    "start": "NODE_PATH=./src nodemon ./src/server.js",
+    "start": "NODE_PATH=./src node ./src/server.js",
     "test": "NODE_PATH=./src ava --watch --verbose --serial"
   },
   "repository": {
