@@ -1,10 +1,12 @@
 import test from 'ava';
 import jsf from 'json-schema-faker';
-import request from 'supertest';
+import supertest from 'supertest';
 import { app, dbConnection } from 'server';
 import userSchema from 'schema/user';
 import _ from 'lodash';
+import config from 'common/config/config';
 
+const request = supertest.agent(config.server.host);
 const userMock = jsf(userSchema.postSchema);
 let userToken;
 let userId;
@@ -12,7 +14,7 @@ let adminToken;
 
 
 test.cb('POST /users - it should allow to create a new user', (t) => {
-  request(app)
+  request
     .post('/users')
     .type('json')
     .send(userMock)
@@ -26,7 +28,7 @@ test.cb('POST /users - it should allow to create a new user', (t) => {
 
 test.cb('POST /users - it should allow to activate the account', (t) => {
   dbConnection.getModels().user.getUser(userId).then((userDetails) => {
-    request(app)
+    request
       .put(`/users/${userId}/activate`)
       .send({ code:  userDetails.verification.code})
       .type('json')
@@ -41,7 +43,7 @@ test.cb('POST /users - it should allow to activate the account', (t) => {
 });
 
 test.cb('POST /users - it should throw error if exisiting email is used to create account', (t) => {
-  request(app)
+  request
     .post('/users')
     .type('json')
     .send(userMock)
@@ -50,7 +52,7 @@ test.cb('POST /users - it should throw error if exisiting email is used to creat
 });
 
 test.cb('POST /users - it should throw error if email field is missing', (t) => {
-  request(app)
+  request
     .post('/users')
     .type('json')
     .send(_.omit(userMock, 'email'))
@@ -59,7 +61,7 @@ test.cb('POST /users - it should throw error if email field is missing', (t) => 
 });
 
 test.cb('POST /users - it should throw error if firstName field is missing', (t) => {
-  request(app)
+  request
     .post('/users')
     .type('json')
     .send(_.omit(userMock, 'firstName'))
@@ -68,7 +70,7 @@ test.cb('POST /users - it should throw error if firstName field is missing', (t)
 });
 
 test.cb('POST /users - it should throw error if lastName field is missing', (t) => {
-  request(app)
+  request
     .post('/users')
     .type('json')
     .send(_.omit(userMock, 'lastName'))
@@ -78,7 +80,7 @@ test.cb('POST /users - it should throw error if lastName field is missing', (t) 
 
 
 test.cb('POST /users - it should throw error if password field is missing', (t) => {
-  request(app)
+  request
     .post('/users')
     .type('json')
     .send(_.omit(userMock, 'password'))
@@ -87,7 +89,7 @@ test.cb('POST /users - it should throw error if password field is missing', (t) 
 });
 
 test.cb('POST /users - it should throw error if email field is malformed', (t) => {
-  request(app)
+  request
     .post('/users')
     .type('json')
     .send(_.merge({email: 'abc'}, _.omit(userMock, 'email')))
@@ -97,7 +99,7 @@ test.cb('POST /users - it should throw error if email field is malformed', (t) =
 
 
 test.cb('POST /auth/login - it should allow user to login', (t) => {
-  request(app)
+  request
     .post('/auth/login')
     .type('json')
     .send(_.pick(userMock, ['email', 'password']))
@@ -111,7 +113,7 @@ test.cb('POST /auth/login - it should allow user to login', (t) => {
 });
 
 test.cb('POST /auth/login - it should throw error if email field is missing', (t) => {
-  request(app)
+  request
     .post('/auth/login')
     .type('json')
     .send(_.pick(userMock, ['password']))
@@ -120,7 +122,7 @@ test.cb('POST /auth/login - it should throw error if email field is missing', (t
 });
 
 test.cb('POST /auth/login - it should throw error if password field is missing', (t) => {
-  request(app)
+  request
     .post('/auth/login')
     .type('json')
     .send(_.pick(userMock, ['email']))
@@ -129,7 +131,7 @@ test.cb('POST /auth/login - it should throw error if password field is missing',
 });
 
 test.cb('POST /auth/login - it should throw error if credentials are incorrect', (t) => {
-  request(app)
+  request
     .post('/auth/login')
     .type('json')
     .send({ email: '1@1.com', password: 'xxxxxxxxxx'})
@@ -138,7 +140,7 @@ test.cb('POST /auth/login - it should throw error if credentials are incorrect',
 });
 
 test.cb('it should allow admin to login', (t) => {
-  request(app)
+  request
     .post('/auth/login')
     .type('json')
     .send({ email: 'admin@admin.com', password: '1234567890' })
@@ -152,7 +154,7 @@ test.cb('it should allow admin to login', (t) => {
 });
 
 test.cb('POST /users - it should allow admin to create a new active user', (t) => {
-  request(app)
+  request
     .post('/users')
     .type('json')
     .set('Authorization', adminToken)
@@ -166,7 +168,7 @@ test.cb('POST /users - it should allow admin to create a new active user', (t) =
 });
 
 test.cb('it should allow user to view user profile', (t) => {
-  request(app)
+  request
     .get(`/users/${userId}`)
     .set('Authorization', userToken)
     .expect('Content-Type', /json/)
@@ -179,7 +181,7 @@ test.cb('it should allow user to view user profile', (t) => {
 
 test.cb('it should allow user to update user profile', (t) => {
   const userUpdateMock = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
-  request(app)
+  request
     .put(`/users/${userId}`)
     .set('Authorization', userToken)
     .type('json')
@@ -194,7 +196,7 @@ test.cb('it should allow user to update user profile', (t) => {
 
 test.cb('it should allow user to update user password', (t) => {
   const userUpdateMock = { old: userMock.password, new: `${Number(Math.random() * 10000000000)}` };
-  request(app)
+  request
     .put(`/users/${userId}/password`)
     .set('Authorization', userToken)
     .type('json')
@@ -208,7 +210,7 @@ test.cb('it should allow user to update user password', (t) => {
 });
 
 test.cb('it should allow user initiate forgot password', (t) => {
-  request(app)
+  request
     .post('/auth/forgot-password')
     .type('json')
     .send(_.pick(userMock, 'email'))
@@ -217,7 +219,7 @@ test.cb('it should allow user initiate forgot password', (t) => {
 });
 
 test.cb('it should allow user reset password', (t) => {
-  request(app)
+  request
     .post('/auth/reset-password')
     .type('json')
     .send(_.pick(userMock, 'email'))
@@ -226,7 +228,7 @@ test.cb('it should allow user reset password', (t) => {
 });
 
 test.cb('it should allow admin to view user profile', (t) => {
-  request(app)
+  request
     .get(`/users/${userId}`)
     .set('Authorization', adminToken)
     .expect('Content-Type', /json/)
@@ -239,7 +241,7 @@ test.cb('it should allow admin to view user profile', (t) => {
 
 test.cb('it should allow admin to update user profile', (t) => {
   const userUpdateMock = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
-  request(app)
+  request
     .put(`/users/${userId}`)
     .set('Authorization', adminToken)
     .type('json')
@@ -253,7 +255,7 @@ test.cb('it should allow admin to update user profile', (t) => {
 });
 
 test.cb('it should allow admin to list all users', (t) => {
-  request(app)
+  request
     .get('/users')
     .set('Authorization', adminToken)
     .expect('Content-Type', /json/)
@@ -265,7 +267,7 @@ test.cb('it should allow admin to list all users', (t) => {
 });
 
 test.cb('it should not allow regular user to list users', (t) => {
-  request(app)
+  request
     .get('/users')
     .set('Authorization', userToken)
     .expect('Content-Type', /json/)
@@ -273,7 +275,7 @@ test.cb('it should not allow regular user to list users', (t) => {
 });
 
 test.cb('it should not allow regular user to delete his user account', (t) => {
-  request(app)
+  request
     .delete(`/users/${userId}`)
     .type('json')
     .set('Authorization', userToken)
@@ -282,7 +284,7 @@ test.cb('it should not allow regular user to delete his user account', (t) => {
 });
 
 test.cb('it should allow admin to delete a user account', (t) => {
-  request(app)
+  request
     .delete(`/users/${userId}`)
     .type('json')
     .set('Authorization', adminToken)

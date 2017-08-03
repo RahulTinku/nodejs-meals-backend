@@ -2,10 +2,13 @@ module.exports = {
   server: {
     port: 3000,
     version: 'v1',
-    status: 'test' //test || live
+    status: 'test', //test || live
+    host: 'http://localhost:3000',
+    //host: 'https://desolate-coast-39570.herokuapp.com',
   },
   database: {
     uri: 'mongodb://localhost:27017/calories',
+    //uri: 'mongodb://devuser:sadfasdfgdf@ds123933.mlab.com:23933/calories',
     table: '',
   },
   logger: {
