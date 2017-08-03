@@ -1,0 +1,21 @@
+{
+  "links": {},
+  "data": [
+    {
+      "id": "5982db7c0060b31443a006bb",
+      "type": "users",
+      "attributes": {
+        "firstName": "Vignes",
+        "lastName": "A",
+        "email": "u22m@um.com",
+        "createdAt": "2017-08-03T08:14:52.151Z",
+        "updatedAt": "2017-08-03T08:14:52.151Z",
+        "status": "GUEST",
+        "roles": "user",
+        "expectedCalories": 2000
+      }
+    }
+  ],
+  "errors": {},
+  "meta": {}
+}

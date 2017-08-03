@@ -1,14 +1,20 @@
 #%RAML 1.0
-title: API
+title: Calories REST
 version: v1
 protocols: [ HTTPS ]
-baseUri: http://myapi.mysite.com/api/{version}
+baseUri: /api/{version}
 mediaType: application/json
 
 types:
-  user-create: !include includes/schemas/post.users.json
-  forgot-password-req: !include includes/schemas/post.auth.forgot-password.json
-  forgot-password-res: !include includes/schemas/post.auth.forgot-password.json
+  forgot-password: !include includes/schemas/post.auth.forgot-password.json
+  reset-password: !include includes/schemas/post.auth.reset-password.json
+  login: !include includes/schemas/post.auth.login.json
+  create-user: !include includes/schemas/post.users.json
+  user-update: !include includes/schemas/put.users.update.json
+  activate-user: !include includes/schemas/put.users.activate.json
+  update-password: !include includes/schemas/put.users.update-password.json
+  create-meal: !include includes/schemas/post.meals.json
+  update-meal: !include includes/schemas/put.meals.update.json
 
 securitySchemes:
   jwt:
@@ -35,309 +41,195 @@ securitySchemes:
   /forgot-password:
     description: Initiate forgot password.
     post:
-      securedBy: [jwt]
       description: Initiate forgot password email
-      queryParameters:
-        title:
-          description: "The access token provided by the authentication application"
-          example: AABBCCDD
-          required: false
-          type: string
       body:
         application/json:
-          type: forgot-password-req
+          type: forgot-password
           example: !include includes/examples/post.auth.forgot-password.req.json
       responses:
         200:
           body:
             application/json:
-              type: forgot-password-res
               example: !include includes/examples/post.auth.forgot-password.res.json
-
   /login:
     post:
-      securedBy: [jwt]
-      description: Initiate forgot password email
-      queryParameters:
-        title:
-          description: "The access token provided by the authentication application"
-          example: AABBCCDD
-          required: false
-          type: string
+      description: Login using email and password and get a jwt access token
       body:
         application/json:
-          type: forgot-password-req
-          example: !include includes/examples/post.auth.forgot-password.req.json
+          type: login
+          example: !include includes/examples/post.auth.login.req.json
       responses:
         200:
           body:
             application/json:
-              type: forgot-password-res
-              example: !include includes/examples/post.auth.forgot-password.res.json
-
+              example: !include includes/examples/post.auth.login.res.json
   /reset-password:
     post:
-      securedBy: [jwt]
-      description: Initiate forgot password email
-      queryParameters:
-        title:
-          description: "The access token provided by the authentication application"
-          example: AABBCCDD
-          required: false
-          type: string
+      description: Reset user's password using email and unique code generated at forgot-password
       body:
         application/json:
-          type: forgot-password-req
-          example: !include includes/examples/post.auth.forgot-password.req.json
+          type: reset-password
+          example: !include includes/examples/post.auth.reset-password.req.json
       responses:
         200:
           body:
             application/json:
-              type: forgot-password-res
-              example: !include includes/examples/post.auth.forgot-password.res.json
-
+              example: !include includes/examples/post.auth.reset-password.res.json
 /users:
   get:
     securedBy: [jwt]
-    description: Initiate forgot password email
+    description: List all users
     queryParameters:
-      title:
-        description: "The access token provided by the authentication application"
-        example: AABBCCDD
+      filter:
+        description: "Accepts a filter query"
+        example: (date eq '2016-05-01') AND ((number_of_calories gt 20) OR (number_of_calories lt 10))
         required: false
         type: string
-    body:
-      application/json:
-        type: forgot-password-req
-        example: !include includes/examples/post.auth.forgot-password.req.json
+      page:
+        description: "Page number required"
+        example: 2
+        required: false
+        type: number
+      limit:
+        description: "Number of records required per page"
+        example: 5
+        required: false
+        type: number
     responses:
       200:
         body:
           application/json:
-            type: forgot-password-res
-            example: !include includes/examples/post.auth.forgot-password.res.json
-
+            example: !include includes/examples/get.users.res.json
   post:
-    securedBy: [jwt]
-    description: Initiate forgot password email
-    queryParameters:
-      title:
-        description: "The access token provided by the authentication application"
-        example: AABBCCDD
-        required: false
-        type: string
+    securedBy: [null, jwt]
+    description: Create new user
     body:
       application/json:
-        type: forgot-password-req
-        example: !include includes/examples/post.auth.forgot-password.req.json
+        type: create-user
+        example: !include includes/examples/post.users.req.json
     responses:
       200:
         body:
           application/json:
-            type: forgot-password-res
-            example: !include includes/examples/post.auth.forgot-password.res.json
-
+            example: !include includes/examples/post.users.res.json
   /{userId}:
     put:
       securedBy: [jwt]
-      description: Initiate forgot password email
-      queryParameters:
-        title:
-          description: "The access token provided by the authentication application"
-          example: AABBCCDD
-          required: false
-          type: string
+      description: Update user's record
       body:
         application/json:
-          type: forgot-password-req
-          example: !include includes/examples/post.auth.forgot-password.req.json
+          type: user-update
+          example: !include includes/examples/put.users.update.req.json
       responses:
         200:
           body:
             application/json:
-              type: forgot-password-res
-              example: !include includes/examples/post.auth.forgot-password.res.json
-
+              example: !include includes/examples/put.users.update.res.json
     get:
       securedBy: [jwt]
-      description: Initiate forgot password email
-      queryParameters:
-        title:
-          description: "The access token provided by the authentication application"
-          example: AABBCCDD
-          required: false
-          type: string
+      description: Get a single user data
       body:
-        application/json:
-          type: forgot-password-req
-          example: !include includes/examples/post.auth.forgot-password.req.json
       responses:
         200:
           body:
             application/json:
-              type: forgot-password-res
-              example: !include includes/examples/post.auth.forgot-password.res.json
-
+              example: !include includes/examples/get.users.user.res.json
     delete:
       securedBy: [jwt]
-      description: Initiate forgot password email
-      queryParameters:
-        title:
-          description: "The access token provided by the authentication application"
-          example: AABBCCDD
-          required: false
-          type: string
-      body:
-        application/json:
-          type: forgot-password-req
-          example: !include includes/examples/post.auth.forgot-password.req.json
+      description: Delete a user record & linked meal records
       responses:
         200:
           body:
             application/json:
-              type: forgot-password-res
-              example: !include includes/examples/post.auth.forgot-password.res.json
-
+              example: !include includes/examples/delete.users.user.res.json
     /activate:
       put:
-        securedBy: [jwt]
-        description: Initiate forgot password email
-        queryParameters:
-          title:
-            description: "The access token provided by the authentication application"
-            example: AABBCCDD
-            required: false
-            type: string
+        description: Confirm a user account after user creation. This is a mandatory process before first time login
         body:
           application/json:
-            type: forgot-password-req
-            example: !include includes/examples/post.auth.forgot-password.req.json
+            type: activate-user
+            example: !include includes/examples/put.users.activate.req.json
         responses:
           200:
             body:
               application/json:
-                type: forgot-password-res
-                example: !include includes/examples/post.auth.forgot-password.res.json
-
+                example: !include includes/examples/put.users.activate.res.json
     /update-password:
       put:
         securedBy: [jwt]
-        description: Initiate forgot password email
-        queryParameters:
-          title:
-            description: "The access token provided by the authentication application"
-            example: AABBCCDD
-            required: false
-            type: string
+        description: Update a user's password using user's token
         body:
           application/json:
-            type: forgot-password-req
-            example: !include includes/examples/post.auth.forgot-password.req.json
+            type: update-password
+            example: !include includes/examples/put.users.update-password.req.json
         responses:
           200:
             body:
               application/json:
-                type: forgot-password-res
-                example: !include includes/examples/post.auth.forgot-password.res.json
-
+                example: !include includes/examples/put.users.update-password.res.json
     /meals:
       get:
         securedBy: [jwt]
-        description: Initiate forgot password email
+        description: List meal records associated with a user
         queryParameters:
-          title:
-            description: "The access token provided by the authentication application"
-            example: AABBCCDD
+          filter:
+            description: "Accepts a filter query"
+            example: (date eq '2016-05-01') AND ((number_of_calories gt 20) OR (number_of_calories lt 10))
             required: false
             type: string
-        body:
-          application/json:
-            type: forgot-password-req
-            example: !include includes/examples/post.auth.forgot-password.req.json
+          page:
+            description: "Page number required"
+            example: 2
+            required: false
+            type: number
+          limit:
+            description: "Number of records required per page"
+            example: 5
+            required: false
+            type: number
         responses:
           200:
             body:
               application/json:
-                type: forgot-password-res
-                example: !include includes/examples/post.auth.forgot-password.res.json
-
+                example: !include includes/examples/get.meals.res.json
       post:
         securedBy: [jwt]
-        description: Initiate forgot password email
-        queryParameters:
-          title:
-            description: "The access token provided by the authentication application"
-            example: AABBCCDD
-            required: false
-            type: string
+        description: Create a meal record for a user
         body:
           application/json:
-            type: forgot-password-req
-            example: !include includes/examples/post.auth.forgot-password.req.json
+            type: create-meal
+            example: !include includes/examples/post.meals.req.json
         responses:
           200:
             body:
               application/json:
-                type: forgot-password-res
-                example: !include includes/examples/post.auth.forgot-password.res.json
-
+                example: !include includes/examples/post.meals.res.json
       /{mealId}:
         put:
           securedBy: [jwt]
-          description: Initiate forgot password email
-          queryParameters:
-            title:
-              description: "The access token provided by the authentication application"
-              example: AABBCCDD
-              required: false
-              type: string
+          description: Update a  meal
           body:
             application/json:
-              type: forgot-password-req
-              example: !include includes/examples/post.auth.forgot-password.req.json
+              type: update-meal
+              example: !include includes/examples/put.meals.update.req.json
           responses:
             200:
               body:
                 application/json:
-                  type: forgot-password-res
-                  example: !include includes/examples/post.auth.forgot-password.res.json
-
+                  example: !include includes/examples/put.meals.update.res.json
         get:
           securedBy: [jwt]
-          description: Initiate forgot password email
-          queryParameters:
-            title:
-              description: "The access token provided by the authentication application"
-              example: AABBCCDD
-              required: false
-              type: string
-          body:
-            application/json:
-              type: forgot-password-req
-              example: !include includes/examples/post.auth.forgot-password.req.json
+          description: Get a meal belongs to a particular user
           responses:
             200:
               body:
                 application/json:
-                  type: forgot-password-res
-                  example: !include includes/examples/post.auth.forgot-password.res.json
-
+                  example: !include includes/examples/get.meals.meal.res.json
         delete:
           securedBy: [jwt]
-          description: Initiate forgot password email
-          queryParameters:
-            title:
-              description: "The access token provided by the authentication application"
-              example: AABBCCDD
-              required: false
-              type: string
-          body:
-            application/json:
-              type: forgot-password-req
-              example: !include includes/examples/post.auth.forgot-password.req.json
+          description: Delete a meal belongs to user
           responses:
             200:
               body:
                 application/json:
-                  type: forgot-password-res
-                  example: !include includes/examples/post.auth.forgot-password.res.json
+                  example: !include includes/examples/delete.meals.meal.res.json

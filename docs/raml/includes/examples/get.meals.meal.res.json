@@ -1,0 +1,21 @@
+{
+  "links": {},
+  "data": [
+    {
+      "id": "597dfc818f1649719f22e0bd",
+      "type": "meals",
+      "attributes": {
+        "userId": "597df0a33ea39a6fe01463c1",
+        "text": "icecream",
+        "date": "2017-07-30",
+        "time": "08:37:33",
+        "calories": 273,
+        "createdAt": "2017-07-30T15:34:25.107Z",
+        "updatedAt": "2017-07-30T15:34:25.107Z",
+        "dailyGoal": true
+      }
+    }
+  ],
+  "errors": {},
+  "meta": {}
+}

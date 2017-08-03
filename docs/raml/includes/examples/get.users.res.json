@@ -1,0 +1,40 @@
+{
+  "links": {
+    "next": "?limit=2&page=3",
+    "prev": "?limit=2&page=1"
+  },
+  "data": [
+    {
+      "id": "5981d7154ba7b304c7b864d5",
+      "type": "users",
+      "attributes": {
+        "firstName": "xiOus",
+        "lastName": "TjfiQquKBHa",
+        "email": "4xi3Xxj8M28@xrYdfjQbVxpuv.dq",
+        "updatedAt": "2017-08-02T13:43:49.335Z",
+        "createdAt": "2017-08-02T13:43:49.335Z",
+        "status": "ACTIVE",
+        "roles": "user",
+        "expectedCalories": 2000
+      }
+    },
+    {
+      "id": "5981d70c82801c04c520ff58",
+      "type": "users",
+      "attributes": {
+        "firstName": "UHfAhhdnFd",
+        "lastName": "z",
+        "email": "uVfFc@TPIayHGmhCPcoROcNHU.cpvk",
+        "createdAt": "2017-08-02T13:43:40.443Z",
+        "updatedAt": "2017-08-02T13:43:40.728Z",
+        "status": "ACTIVE",
+        "roles": "user",
+        "expectedCalories": 2000
+      }
+    }
+  ],
+  "errors": {},
+  "meta": {
+    "count": 2
+  }
+}

@@ -43,7 +43,7 @@ class Serializer {
       };
       mapping.links = {
         next: (pagination.limit && Number(pagination.limit) === sourceData.length) ? `?${querystring.stringify(_.omit(pagination, ['next', 'prev', 'page']))}&page=${Number(pagination.page || 1) + 1}` : '',
-        prev: pagination.page > 1 ? `?${querystring.stringify(_.omit(pagination, ['next', 'prev', 'page']))}&page=${pagination.page}` : '',
+        prev: pagination.page > 1 ? `?${querystring.stringify(_.omit(pagination, ['next', 'prev', 'page']))}&page=${pagination.page - 1}` : '',
       };
     }
 

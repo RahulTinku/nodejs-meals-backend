@@ -1,0 +1,22 @@
+{
+  "links": {},
+  "data": [
+    {
+      "id": "5982eb454f86b3162d18c047",
+      "type": "meals",
+      "attributes": {
+        "userId": "597df0a33ea39a6fe01463c1",
+        "text": "5 cherry",
+        "calories": 20,
+        "date": "2017-07-30",
+        "time": "08:37:33",
+        "autoFetch": false,
+        "createdAt": "2017-08-03T09:22:13.157Z",
+        "updatedAt": "2017-08-03T09:22:13.157Z",
+        "dailyGoal": true
+      }
+    }
+  ],
+  "errors": {},
+  "meta": {}
+}

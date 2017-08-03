@@ -1,0 +1,13 @@
+{
+  "links": {},
+  "data": [
+    {
+      "type": "token",
+      "attributes": {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1OTdkZjBhMzNlYTM5YTZmZTAxNDYzYzEiLCJpZCI6IjU5ODJkNzVmYWNiZDdlMTNlMWM2YjExMyIsImlhdCI6MTUwMTc0NzAzOSwiZXhwIjoxNTAxODMzNDM5fQ.blnpSJkGf2ZevprkKvTj5AWJ_OwQlyWyVIRjYGpX6Ro"
+      }
+    }
+  ],
+  "errors": {},
+  "meta": {}
+}
