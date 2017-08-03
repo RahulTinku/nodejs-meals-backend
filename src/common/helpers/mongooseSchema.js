@@ -1,13 +1,22 @@
-String.prototype.capitalize = function () {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-};
+/**
+ * Changes the first character of a string to capital letter
+ *
+ * @param string
+ */
+const capitalize = (string) => (string.charAt(0).toUpperCase() + string.slice(1));
 
+/**
+ * Converts a valid JSON schema to a valid mongoose schema
+ *
+ * @param jsonSchema
+ * @returns {{}}
+ */
 module.exports = (jsonSchema) => {
   const schema = {};
   const properties = jsonSchema.properties;
   Object.keys(properties).forEach((key) => {
     schema[key] = {
-      type: (properties[key].type).capitalize(),
+      type: capitalize((properties[key].type)),
     };
     if ((jsonSchema.required || []).indexOf(key) > -1) schema[key].required = true;
     if ((properties[key]['m-unique'])) {

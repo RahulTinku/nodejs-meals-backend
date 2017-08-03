@@ -1,5 +1,11 @@
 const _ = require('lodash');
 
+/**
+ * Converts a string in a specific format to mongodb query
+ *
+ * @param input: (date eq '2016-05-01') AND ((number_of_calories gt 20) OR (number_of_calories lt 10))
+ * @returns {{}}
+ */
 const processQuery = (input) => {
   let queryString = trimSpaces(input);
   let regEx = /([a-z_]+)( eq | ne | gt | lt )([a-z0-9_$\-'",\.\\\[\]\{\}\: ]+)/gi;
@@ -29,6 +35,12 @@ const processQuery = (input) => {
   return { query: JSON.parse(queryString.replace(/^(\()(.*)(\))$/, '$2')), keys };
 };
 
+/**
+ * Removes spaces from a filter string
+ *
+ * @param input
+ * @returns {*}
+ */
 const trimSpaces = (input) => {
   if(typeof input !== 'string') return '';
   let result = _.cloneDeep(input);

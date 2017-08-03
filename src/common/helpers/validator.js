@@ -5,6 +5,13 @@ const _ = require('lodash');
 
 const jsonValidate = new JsonSchema();
 
+/**
+ * Creates a object that matches the properties of JSON schema from original object given
+ *
+ * @param input
+ * @param schema
+ * @returns {{}}
+ */
 const buildParams = ({ input, schema }) => new Promise((resolve) => {
   const properties = _.keys(schema.properties);
   const params = {};
@@ -16,7 +23,7 @@ const buildParams = ({ input, schema }) => new Promise((resolve) => {
 
 /**
  * Validates the json and its content against the given schema.
- * Throws error if mismatch
+ * Throws error if mismatch occurs
  *
  * @param input
  * @param schemaName

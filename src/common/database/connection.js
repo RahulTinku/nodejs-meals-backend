@@ -13,6 +13,11 @@ class Connection {
     mongoose.Promise = bluebird;
   }
 
+  /**
+   * Initiates connection with mongodb
+   *
+   * @returns {Promise}
+   */
   connect() {
     return mongoose.connect(this.options.uri, { config: { autoIndex: false }, useMongoClient: true })
       .then((db) => {
@@ -21,6 +26,12 @@ class Connection {
         this.connectedStatus = true;
       });
   }
+
+  /**
+   * Returns status of connection
+   *
+   * @returns {boolean}
+   */
   isConnected() {
     return this.connectedStatus;
   }
