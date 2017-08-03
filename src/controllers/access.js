@@ -6,6 +6,13 @@ const Serializer = require('common/serializer');
 const serializer = new Serializer();
 
 class AccessController {
+  /**
+   * Initializes Access Controller
+   *
+   * @param: {
+   *  model : model reference
+   * }
+   */
   constructor(model) {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
@@ -13,6 +20,13 @@ class AccessController {
     this.verifyAuth = this.verifyAuth.bind(this);
   }
 
+  /**
+   * Creates JWT token & stores its reference record in access model
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   performLogin(req, res, next) {
     const body = { expiresAt: dateConverter.addDays({ count: 1, format: 'X' }).split('.')[0], userId: req.user._id.toString() };
     validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
@@ -23,6 +37,12 @@ class AccessController {
       .catch(error => next(error));
   }
 
+  /**
+   * Validates the token sent in each request
+   *
+   * @param optional
+   * @returns {function(*, *, *)}
+   */
   verifyAuth(optional) {
     return (req, res, next) => {
       const input = req.headers.authorization;

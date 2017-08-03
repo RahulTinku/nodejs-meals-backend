@@ -53,7 +53,7 @@ test.cb.before('it should allow user to login', (t) => {
       t.truthy(res.body.data[0].attributes.access_token);
       userToken = res.body.data[0].attributes.access_token;
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb.before('it should allow admin to login', (t) => {
@@ -77,7 +77,7 @@ test.cb('it should allow user to add a meal', (t) => {
     .type('json')
     .send(mealMock)
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(201)
     .then((res) => {
       t.truthy(res.body.data[0].id);
       mealId = res.body.data[0].id;
@@ -152,7 +152,7 @@ test.cb('it should allow user to add a meal without calories & calories get auto
             t.truthy(_.isEqual(res.body.data[0].id, mealId));
             t.end();
           })
-      }
+      };
       setTimeout(afterWait, 3000);
     }).catch(err => console.log(err));
 });
@@ -189,7 +189,7 @@ test.cb('it should allow admin to add a meal to a user', (t) => {
     .type('json')
     .send(mealMock)
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(201)
     .then((res) => {
       t.truthy(res.body.data[0].id);
       mealId = res.body.data[0].id;

@@ -3,6 +3,14 @@ const helper = require('sendgrid').mail;
 const sg = require('sendgrid')(config.mail.sendgrid.apiKey);
 const exceptions = require('common/exceptions');
 
+/**
+ * Initiates trasactional email through sendgrid api
+ *
+ * @param to
+ * @param template
+ * @param userDetails
+ * @returns {*}
+ */
 const mailer = ({ to, template, userDetails } = {}) => {
   if (config.server.status === 'test') return Promise.resolve(202);
   return new Promise((resolve, reject) => {

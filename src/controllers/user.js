@@ -12,6 +12,13 @@ const mailer = require('common/mailer');
 const serializer = new Serializer();
 
 class UserController {
+  /**
+   * Initializes Role Controller
+   *
+   * @param: {
+   *  model : model reference
+   * }
+   */
   constructor(model) {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
@@ -29,6 +36,15 @@ class UserController {
     this.resetPassword = this.resetPassword.bind(this);
   }
 
+  /**
+   * Handles create user request.
+   * Send an verification code to the user's email
+   * This can take higher role(admin)'s token to create pre-activated user.
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   registerUser(req, res, next) {
     const body = _.cloneDeep(req.body);
     const preActivated = (((req.user || {}).roles) && (req.user || {}).roles !== 'user');
@@ -46,6 +62,13 @@ class UserController {
       .catch(error => next(error));
   }
 
+  /**
+   * Checks the validity of the username and password
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   validateLogin(req, res, next) {
     const body = _.cloneDeep(req.body);
     validator.buildParams({ input: body, schema: this.jsonSchema.loginSchema })
@@ -56,6 +79,14 @@ class UserController {
       .catch(error => next(error));
   }
 
+  /**
+   * Handles activate user request.
+   * Checks the validity of the verification code and userId to activate a user account
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   activateUser(req, res, next) {
     if(req.userId.status === 'GUEST' && (req.userId.verification || {}).code === req.body.code) {
       this.model.updateUser(req.userId._id, { status: 'ACTIVE', verification: {} })
@@ -66,12 +97,27 @@ class UserController {
     }
   }
 
+  /**
+   * Handles show single user request
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   showUser(req, res, next) {
     this.model.getUser(req.params.userId)
       .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }
 
+  /**
+   * Handles list users request.
+   * Accepts filters and performs pagination
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   listUsers(req, res, next) {
     const query = stringToQuery(req.query.filter);
     const searchable = _.keys(this.jsonSchema.querySchema.properties);
@@ -88,6 +134,13 @@ class UserController {
       .catch(error => next(error));
   }
 
+  /**
+   * Handles update single user request.
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   updateUser(req, res, next) {
     const body = _.cloneDeep(req.body);
     validator.buildParams({ input: body, schema: this.jsonSchema.updateSchema })
@@ -97,6 +150,13 @@ class UserController {
       .catch(error => next(error));
   }
 
+  /**
+   * Handles update password request for a authenticated user
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   updatePassword(req, res, next) {
     const body = _.cloneDeep(req.body);
     validator.buildParams({ input: body, schema: this.jsonSchema.updatePasswordSchema })
@@ -107,6 +167,14 @@ class UserController {
       .catch(error => next(error));
   }
 
+  /**
+   * Handles forgot-password request.
+   * Initiates a email to user's email with verification code to be used to reset password
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   forgotPassword(req, res, next) {
     const body = _.cloneDeep(req.body);
     validator.buildParams({ input: body, schema: this.jsonSchema.forgotPasswordSchema })
@@ -126,6 +194,14 @@ class UserController {
       .catch(error => next(error));
   }
 
+  /**
+   * Handles password reset request
+   * Checks the validity of the code & email to reset the password
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   resetPassword(req, res, next) {
     const body = _.cloneDeep(req.body);
     validator.buildParams({ input: body, schema: this.jsonSchema.resetPasswordSchema })
@@ -143,12 +219,26 @@ class UserController {
       .catch(error => next(error));
   }
 
+  /**
+   * Handles delete user request
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   removeUser(req, res, next) {
     this.model.deleteUser(req.userId._id)
       .then(result => res.status(204).send(serializer.serialize(result, { type: 'users' })))
       .catch(error => next(error));
   }
 
+  /**
+   * Fetches details of userId and saves it to req object
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   populateParamsUserId(req, res, next) {
     this.model.getUser(req.params.userId).then((userData) => {
       if (!userData) next(new exceptions.NotFound());
@@ -157,6 +247,12 @@ class UserController {
     }).catch(error => next(error));
   }
 
+  /**
+   * Fetches the details of token user and saves it in req object
+   *
+   * @param optional
+   * @returns {function(*, *, *)}
+   */
   populateTokenUser(optional) {
     return (req, res, next) => {
       if (optional && !req.authToken) next();

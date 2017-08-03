@@ -2,6 +2,9 @@ const _ = require('lodash');
 const querystring = require('querystring');
 
 class Serializer {
+  /**
+   * Initializes serializer mapping
+   */
   constructor() {
     this.mapping = {
       links: {},
@@ -11,10 +14,22 @@ class Serializer {
     };
   }
 
+  /**
+   * Gets the mapping for serializing data
+   * @returns {*}
+   */
   getMapping() {
     return _.cloneDeep(this.mapping);
   }
 
+  /**
+   * Serializes the data to send as response for JSON REST API
+   *
+   * @param sourceData
+   * @param pagination
+   * @param type
+   * @returns {*}
+   */
   serialize(sourceData, { pagination = {}, type } = {}) {
     const mapping = this.getMapping();
     if (sourceData instanceof Error) {
@@ -59,6 +74,14 @@ class Serializer {
     return mapping;
   }
 
+  /**
+   * Serializes the errors
+   *
+   * @param detail
+   * @param code
+   * @param status
+   * @returns {Array}
+   */
   static processErrors(detail, code, status) {
     const result = [];
     _.each(detail, (error) => {

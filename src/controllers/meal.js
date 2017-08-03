@@ -8,6 +8,13 @@ const config = require('common/config/config');
 const serializer = new Serializer();
 
 class MealController {
+  /**
+   * Initializes Meal Controller
+   *
+   * @param: {
+   *  model : model reference
+   * }
+   */
   constructor(model) {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
@@ -19,18 +26,34 @@ class MealController {
     this.verifyMealOwner = this.verifyMealOwner.bind(this);
   }
 
+  /**
+   * Handles Add meals request.
+   * Checks if calories is provided. If not, Adds autoFetch:false, which will trigger calorie auto-calculation later
+   * Dailygoal boolean calculation will also happen later
+   * Returns 202 if calorie is auto-calulated. Defaults to 201
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   addMeal(req, res, next) {
     const body = _.merge(req.body, { userId: req.userId.id });
     validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
       .then((input) => _.merge(input, { autoFetch: (!input.calories) }))
       .then(input => this.model.addMeal(input))
-      .then(result => Promise.all([res.status(result.calories ? 200 : 202).send(serializer.serialize(result, { type: 'meals' })),
+      .then(result => Promise.all([res.status(result.calories ? 201 : 202).send(serializer.serialize(result, { type: 'meals' })),
         this.updateCaloriesAndDailyGoal({expCal: Number(req.userId.expectedCalories), id: result.id })
       ]))
       .catch(error => next(error));
   }
 
+  /**
+   * Auto-calculages calories (if required) & updates dailygoal Field based on calorie consumption
+   *
+   * @param input
+   * @returns {Promise.<TResult>}
+   */
   updateCaloriesAndDailyGoal(input) {
     // { id(mealId): '', expCal: number }
     return this.model.getMeal(input.id)
@@ -51,12 +74,26 @@ class MealController {
       });
   }
 
+  /**
+   * Handles get single meal request
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   showMeal(req, res, next) {
     this.model.getMeal(req.params.mealId)
       .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
       .catch(error => next(error));
   }
 
+  /**
+   * Handles list meals request. Performs pagination, process filter queries
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   listMeals(req, res, next) {
     const query = stringToQuery(req.query.filter);
     const searchable = _.keys(this.jsonSchema.querySchema.properties);
@@ -75,6 +112,13 @@ class MealController {
       .catch(error => next(error));
   }
 
+  /**
+   * Handles update meal request
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   updateMeal(req, res, next) {
     const input = _.merge(req.body, { userId: req.userId.id });
     validator.buildParams({ input, schema: this.jsonSchema.updateSchema })
@@ -87,12 +131,26 @@ class MealController {
       .catch(error => next(error));
   }
 
+  /**
+   * Handles remove meal request
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   removeMeal(req, res, next) {
     this.model.deleteMeal(req.params.mealId)
       .then(() => res.status(204).send(serializer.serialize()))
       .catch(error => next(error));
   }
 
+  /**
+   * Verifies if the :userId in path is the owner of :meals in path
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   verifyMealOwner(req, res, next) {
     this.model.getMeal(req.params.mealId)
       .then((result) => {

@@ -146,7 +146,7 @@ class User {
     return this.queryUser({ email }).then((data) => {
       if (data.length === 0) throw new exceptions.PasswordMismatch();
       if (!this.verifyPassword(password, data[0].password)) throw new exceptions.PasswordMismatch();
-      // if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
+      if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
       return data[0];
     });
   }

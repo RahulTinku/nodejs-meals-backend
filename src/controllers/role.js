@@ -4,6 +4,13 @@ const _ = require('lodash');
 const exceptions = require('common/exceptions');
 
 class RoleController {
+  /**
+   * Initializes Role Controller
+   *
+   * @param: {
+   *  model : model reference
+   * }
+   */
   constructor(model) {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
@@ -11,6 +18,13 @@ class RoleController {
     this.getNextLevelRoles = this.getNextLevelRoles.bind(this);
   }
 
+  /**
+   * Fetches subordinate roles for a particular role. Eg: For admin, sub roles are user-manager & user
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
   getNextLevelRoles(req, res, next) {
     this.model.queryRole({ level: { $gt: req.user.roleLevel } })
       .then((roleData) => {
@@ -19,6 +33,12 @@ class RoleController {
       });
   }
 
+  /**
+   * Validates if a role has influence on other role to perform a particular a action on its resource(users, meals)
+   *
+   * @param resource
+   * @param action
+   */
   validateRole(resource, action) {
     return (req, res, next) => {
       let getUserRole = Promise.resolve();
