@@ -69,7 +69,7 @@ test.cb.before('it should allow admin to login', (t) => {
       t.truthy(res.body.data[0].attributes.access_token);
       adminToken = res.body.data[0].attributes.access_token;
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('it should allow user to add a meal', (t) => {
@@ -84,7 +84,7 @@ test.cb('it should allow user to add a meal', (t) => {
       t.truthy(res.body.data[0].id);
       mealId = res.body.data[0].id;
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('it should allow user to update meal details', (t) => {
