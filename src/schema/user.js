@@ -38,12 +38,14 @@ const updatePasswordSchema = {
 const resetPasswordSchema = {
   type: 'object',
   properties: _.merge({ code: { type: 'string' } }, _.pick(user, 'email')),
+  required: ['email', 'code'],
   additionalProperties: false,
 };
 
 const forgotPasswordSchema = {
   type: 'object',
   properties: _.pick(user, ['email']),
+  required: ['email'],
   additionalProperties: false,
 };
 

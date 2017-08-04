@@ -29,11 +29,17 @@ const roles = [{
   }];
 const users = [{
     "password" : "1234567890",
-    "firstName" : "Vignes",
+    "firstName" : "Admin",
     "lastName" : "A",
     "email" : "admin@admin.com",
     "roles" : "admin",
-  }];
+  }, {
+  "password" : "1234567890",
+  "firstName" : "UserManager",
+  "lastName" : "UM",
+  "email" : "um@um.com",
+  "roles" : "user-manager",
+}];
 
 dbConnection.connect().then(() => {
   const promiseArray = [];

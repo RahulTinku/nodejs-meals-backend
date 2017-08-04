@@ -177,6 +177,8 @@ class UserController {
    */
   forgotPassword(req, res, next) {
     const body = _.cloneDeep(req.body);
+    let updateUserPromise = Promise.resolve();
+    let mailerPromise = Promise.resolve();
     validator.buildParams({ input: body, schema: this.jsonSchema.forgotPasswordSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.forgotPasswordSchema }))
       .then(input => this.model.queryUser(input))
@@ -184,13 +186,13 @@ class UserController {
         if (result && result[0]) {
           const code = uuid();
           const input = { verification: { code, expiry: dateConverter.addTimeIso(15, 'm'), attempts: 0, resendAttempt: 0 } };
-          return this.model.updateUser(result[0]._id, input);
+          updateUserPromise = this.model.updateUser(result[0]._id, input);
+          mailerPromise = mailer({to: result[0].email, userDetails: {
+            firstName: result[0].firstName, code: result[0].verification.code }, template: 'forgotPassword'});
         }
-        throw new exceptions.NotFound();
+        updateUserPromise = updateUserPromise.then(() => res.status(202).send(serializer.serialize()));
+        return Promise.all([updateUserPromise, mailerPromise]);
       })
-      .then(result => Promise.all([res.status(202).send(serializer.serialize()),
-        mailer({to: result.email, userDetails: {
-        firstName: result.firstName, code: result.verification.code }, template: 'forgotPassword'})]))
       .catch(error => next(error));
   }
 

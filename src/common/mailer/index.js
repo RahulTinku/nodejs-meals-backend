@@ -14,7 +14,6 @@ const exceptions = require('common/exceptions');
 const mailer = ({ to, template, userDetails } = {}) => {
   if (config.server.status === 'test') return Promise.resolve(202);
   return new Promise((resolve, reject) => {
-    if (config.server)
     if (!to || !userDetails || !template) new exceptions.InvalidInput();
     const templateDetails = config.mail.sendgrid.templates[template];
     const fromEmail = new helper.Email(config.mail.fromEmail);
