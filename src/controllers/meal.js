@@ -83,7 +83,7 @@ class MealController {
    */
   showMeal(req, res, next) {
     this.model.getMeal(req.params.mealId)
-      .then(result => res.send(serializer.serialize(result, { type: 'meals' })))
+      .then(result => res.status(200).send(serializer.serialize(result, { type: 'meals' })))
       .catch(error => next(error));
   }
 
@@ -107,7 +107,7 @@ class MealController {
     this.model.queryMeal(input, _.merge({ sortby: 'date,time' }, _.pick(req.query, ['order', 'sortby', 'page', 'limit'])))
       .then((result) => {
         const pagination = { pagination: _.merge({ limit: config.listing.limit }, req.query), type: 'meals' };
-        res.send(serializer.serialize(result, pagination));
+        res.status(200).send(serializer.serialize(result, pagination));
       })
       .catch(error => next(error));
   }
