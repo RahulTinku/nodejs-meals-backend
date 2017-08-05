@@ -188,7 +188,7 @@ class UserController {
           const input = { verification: { code, expiry: dateConverter.addTimeIso(15, 'm'), attempts: 0, resendAttempt: 0 } };
           updateUserPromise = this.model.updateUser(result[0]._id, input);
           mailerPromise = mailer({to: result[0].email, userDetails: {
-            firstName: result[0].firstName, code: result[0].verification.code }, template: 'forgotPassword'});
+            firstName: result[0].firstName, code: input.verification.code }, template: 'forgotPassword'});
         }
         updateUserPromise = updateUserPromise.then(() => res.status(202).send(serializer.serialize()));
         return Promise.all([updateUserPromise, mailerPromise]);
@@ -206,19 +206,22 @@ class UserController {
    */
   resetPassword(req, res, next) {
     const body = _.cloneDeep(req.body);
+    const newPassword = dateConverter.getRandomNumber(10).toString();
     validator.buildParams({ input: body, schema: this.jsonSchema.resetPasswordSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.resetPasswordSchema }))
       .then(input => this.model.queryUser({ 'verification.code': input.code, email: input.email }))
       .then((result) => {
         if (result && result[0]) {
           const code = uuid();
-          const input = { verification: {}, password: dateConverter.getRandomNumber(10).toString() };
+          const input = { verification: {}, password: newPassword };
           return this.model.updateUser(result[0]._id, input);
         }
         throw new exceptions.NotFound();
       })
-      .then(result => res.status(200).send(serializer.serialize()))
-      .catch(error => next(error));
+      .then(result => Promise.all[res.status(200).send(serializer.serialize()),
+        mailer({to: result.email, userDetails: {
+          firstName: result.firstName, password: newPassword }, template: 'resetPassword'})])
+      .catch(error => console.log(error));
   }
 
   /**
