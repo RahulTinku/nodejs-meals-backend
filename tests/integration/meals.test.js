@@ -120,7 +120,7 @@ test.cb('POST /users/:userId/meals - it should allow user to add a meal', (t) =>
     .type('json')
     .send(mealMock)
     .expect('Content-Type', /json/)
-    .expect(201)
+    .expect(202)
     .then((res) => {
       t.truthy(res.body.data[0].id);
       userMealId = res.body.data[0].id;
@@ -161,7 +161,7 @@ test.cb('POST /users/:userId/meals - it should allow admin to add a meal to a us
     .type('json')
     .send(mealMock)
     .expect('Content-Type', /json/)
-    .expect(201)
+    .expect(202)
     .then((res) => {
       t.truthy(res.body.data[0].id);
       secondaryMealId = res.body.data[0].id;
@@ -355,7 +355,7 @@ test.cb('PUT /users/:userId/meals/:mealId - it should allow user to update meal 
     .type('json')
     .send(mealUpdateMock)
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(202)
     .then((res) => {
       t.deepEqual(_.pick(res.body.data[0].attributes, _.keys(mealUpdateMock)), mealUpdateMock);
       t.end();
@@ -395,7 +395,7 @@ test.cb('PUT /users/:userId/meals/:mealId - it should allow admin to update meal
     .type('json')
     .send(mealUpdateMock)
     .expect('Content-Type', /json/)
-    .expect(200)
+    .expect(202)
     .then((res) => {
       t.deepEqual(_.pick(res.body.data[0].attributes, _.keys(mealUpdateMock)), mealUpdateMock);
       t.end();

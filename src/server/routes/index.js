@@ -13,7 +13,7 @@ const routes = (express, app, { user, access, role, meal }) => {
   route.put('/users/:userId/activate', user.populateParamsUserId, user.activateUser);
   route.put('/users/:userId/password', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'update'), user.updatePassword);
   route.get('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'read'), user.showUser);
-  route.delete('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'delete'), user.removeUser);
+  route.delete('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'delete'), user.removeUser, meal.removeMealsByUserId);
 
   route.get('/users/:userId/meals', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'read'), meal.listMeals);
   route.post('/users/:userId/meals', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'write'), meal.addMeal);

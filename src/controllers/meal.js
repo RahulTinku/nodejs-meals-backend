@@ -23,6 +23,7 @@ class MealController {
     this.showMeal = this.showMeal.bind(this);
     this.updateMeal = this.updateMeal.bind(this);
     this.removeMeal = this.removeMeal.bind(this);
+    this.removeMealsByUserId = this.removeMealsByUserId.bind(this);
     this.verifyMealOwner = this.verifyMealOwner.bind(this);
   }
 
@@ -42,7 +43,7 @@ class MealController {
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
       .then((input) => _.merge(input, { autoFetch: (!input.calories) }))
       .then(input => this.model.addMeal(input))
-      .then(result => Promise.all([res.status(result.calories ? 201 : 202).send(serializer.serialize(result, { type: 'meals' })),
+      .then(result => Promise.all([res.status(202).send(serializer.serialize(_.omit(result.toObject(), ['dailyGoal']), { type: 'meals' })),
         this.updateCaloriesAndDailyGoal({expCal: Number(req.userId.expectedCalories), id: result.id })
       ]))
       .catch(error => next(error));
@@ -125,7 +126,7 @@ class MealController {
       .then(input => validator.validate({ input, schema: this.jsonSchema.updateSchema }))
       .then(input => (input.calories ? _.merge(input, { autoFetch: false }) : input))
       .then(input => this.model.updateMeal(req.params.mealId, input))
-      .then(result => Promise.all([res.status(result.autoFetch ? 202 : 200).send(serializer.serialize(result, { type: 'meals' })),
+      .then(result => Promise.all([res.status(202).send(serializer.serialize(_.omit(result.toObject(), ['dailyGoal']), { type: 'meals' })),
         this.updateCaloriesAndDailyGoal({expCal: Number(req.userId.expectedCalories), id: result.id })
       ]))
       .catch(error => next(error));
@@ -140,6 +141,19 @@ class MealController {
    */
   removeMeal(req, res, next) {
     this.model.deleteMeal(req.params.mealId)
+      .then(() => res.status(204).send(serializer.serialize()))
+      .catch(error => next(error));
+  }
+
+  /**
+   * Additional handler for delete user. This deletes all meals belongs to a user while user is deleted.
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
+  removeMealsByUserId(req, res, next) {
+    this.model.deleteMealsByUserId(req.userId.id)
       .then(() => res.status(204).send(serializer.serialize()))
       .catch(error => next(error));
   }
