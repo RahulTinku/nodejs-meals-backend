@@ -41,6 +41,10 @@ module.exports = {
           subject: 'Password Reset',
           templateId: 'a0624261-3f89-495d-b60e-434e7a8e751a',
         },
+        resetPassword: {
+          subject: 'New Password',
+          templateId: '50d9a559-2549-4a9d-9809-8aeeb2013754',
+        },
       }
     },
     fromEmail: 'vignes.arul@gmail.com'
