@@ -1,21 +1,27 @@
-const routes = (app, { user, access, role, meal }) => {
-  app.post('/auth/login', user.validateLogin, access.performLogin);
-  app.post('/auth/forgot-password', user.forgotPassword);
-  app.post('/auth/reset-password', user.resetPassword);
+const config = require('common/config/config');
 
-  app.get('/users', access.verifyAuth(), user.populateTokenUser(), role.validateRole('users', 'read'), role.getNextLevelRoles, user.listUsers);
-  app.post('/users', access.verifyAuth(true), user.populateTokenUser(true), user.registerUser);
-  app.put('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'update'), user.updateUser);
-  app.put('/users/:userId/activate', user.populateParamsUserId, user.activateUser);
-  app.put('/users/:userId/password', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'update'), user.updatePassword);
-  app.get('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'read'), user.showUser);
-  app.delete('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'delete'), user.removeUser);
+const routes = (express, app, { user, access, role, meal }) => {
+  const route = express.Router();
 
-  app.get('/users/:userId/meals', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'read'), meal.listMeals);
-  app.post('/users/:userId/meals', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'write'), meal.addMeal);
-  app.put('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'update'), meal.verifyMealOwner, meal.updateMeal);
-  app.get('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'read'), meal.verifyMealOwner, meal.showMeal);
-  app.delete('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'delete'), meal.verifyMealOwner, meal.removeMeal);
+  route.post('/auth/login', user.validateLogin, access.performLogin);
+  route.post('/auth/forgot-password', user.forgotPassword);
+  route.post('/auth/reset-password', user.resetPassword);
+
+  route.get('/users', access.verifyAuth(), user.populateTokenUser(), role.validateRole('users', 'read'), role.getNextLevelRoles, user.listUsers);
+  route.post('/users', access.verifyAuth(true), user.populateTokenUser(true), user.registerUser);
+  route.put('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'update'), user.updateUser);
+  route.put('/users/:userId/activate', user.populateParamsUserId, user.activateUser);
+  route.put('/users/:userId/password', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'update'), user.updatePassword);
+  route.get('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'read'), user.showUser);
+  route.delete('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'delete'), user.removeUser);
+
+  route.get('/users/:userId/meals', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'read'), meal.listMeals);
+  route.post('/users/:userId/meals', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'write'), meal.addMeal);
+  route.put('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'update'), meal.verifyMealOwner, meal.updateMeal);
+  route.get('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'read'), meal.verifyMealOwner, meal.showMeal);
+  route.delete('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'delete'), meal.verifyMealOwner, meal.removeMeal);
+
+  app.use(`/${config.server.version}`, route);
 };
 
 module.exports = routes;

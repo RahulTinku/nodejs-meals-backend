@@ -18,7 +18,7 @@ dbConnection.connect().then(() => {
   app.use(bodyParser.json());
   app.all('/*', middlewares.enableCors);
   dbModels = models(dbConnection.db);
-  routes(app, controllers(dbModels));
+  routes(express, app, controllers(dbModels));
 
   // If no route is matched by now, it must be a 404
   app.use((req, res, next) => {
