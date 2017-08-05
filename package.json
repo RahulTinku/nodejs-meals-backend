@@ -12,7 +12,7 @@
   "scripts": {
     "docs": "raml2html -i docs/raml/api.raml -o api.html",
     "start": "NODE_PATH=./src nodemon ./src/server.js",
-    "test": "yarn start & NODE_PATH=./src ava --watch --verbose --serial",
+    "test": "yarn start & NODE_PATH=./src ava --fail-fast --watch --verbose --serial",
     "postinstall": "(NODE_PATH=./src node scripts/populateRolesAdmin.js) &"
   },
   "repository": {

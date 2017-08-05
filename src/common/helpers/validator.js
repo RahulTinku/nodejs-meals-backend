@@ -13,12 +13,7 @@ const jsonValidate = new JsonSchema();
  * @returns {{}}
  */
 const buildParams = ({ input, schema }) => new Promise((resolve) => {
-  const properties = _.keys(schema.properties);
-  const params = {};
-  properties.forEach((property) => {
-    if (input[property]) params[property] = input[property];
-  });
-  resolve(params);
+  resolve(_.pick(input, _.intersection(_.keys(schema.properties), _.keys(input))));
 });
 
 /**
