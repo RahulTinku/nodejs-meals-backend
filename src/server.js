@@ -26,7 +26,7 @@ dbConnection.connect().then(() => {
   app.use(middlewares.errorHandler);
 
   // Start the server
-  const server = app.listen(config.server.port, (err) => {
+  const server = app.listen(config.server.port, () => {
     logger.info(`Express server listening on port ${server.address().port}`);
   }).on('error', (err) => { });
 });

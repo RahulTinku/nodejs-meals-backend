@@ -117,8 +117,8 @@ class MealController {
    * @param next
    */
   updateMeal(req, res, next) {
-    const input = _.merge(req.body, { userId: req.userId.id });
-    validator.buildParams({ input, schema: this.jsonSchema.updateSchema })
+    const data = _.merge(req.body, { userId: req.userId.id });
+    validator.buildParams({ input: data, schema: this.jsonSchema.updateSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.updateSchema }))
       .then(input => (input.calories ? _.merge(input, { autoFetch: false }) : input))
       .then(input => this.model.updateMeal(req.params.mealId, input))

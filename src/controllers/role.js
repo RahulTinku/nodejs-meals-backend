@@ -1,4 +1,3 @@
-const validator = require('common/helpers/validator');
 const Promise = require('bluebird');
 const _ = require('lodash');
 const exceptions = require('common/exceptions');

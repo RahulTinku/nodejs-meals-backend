@@ -231,7 +231,6 @@ class UserController {
       .then(input => this.model.queryUser({ 'verification.code': input.code, email: input.email }))
       .then((result) => {
         if (result && result[0]) {
-          const code = uuid();
           const input = { verification: {}, password: newPassword };
           return this.model.updateUser(result[0]._id, input);
         }
@@ -254,7 +253,7 @@ class UserController {
    */
   removeUser(req, res, next) {
     this.model.deleteUser(req.userId._id)
-      .then(result => next())
+      .then(() => next())
       .catch(error => next(error));
   }
 
