@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "roles": {
+      "type": "string"
+    }
+  },
+  "require": ["roles"],
+  "additionalProperties": false
+}

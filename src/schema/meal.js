@@ -4,7 +4,7 @@ const tableName = 'meals';
 
 const meal = {
   userId: { type: 'string' },
-  text: { type: 'string' },
+  text: { type: 'string', minLength: 2, maxlength: 150 },
   calories: { type: 'number', minimum: 0 },
   dailyGoal: { type: 'boolean', 'm-default': true },
   date: { type: 'string', pattern: '^(19|20)\\d\\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$' },
@@ -23,6 +23,7 @@ const postSchema = {
 const updateSchema = {
   type: 'object',
   properties: _.pick(meal, ['userId', 'calories', 'text', 'date', 'time']),
+  anyOf: ['calories', 'text', 'date', 'time'].map(key => ({ required: [`${key}`] })),
   additionalProperties: false,
 };
 

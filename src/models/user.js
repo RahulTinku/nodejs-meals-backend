@@ -39,9 +39,9 @@ class User {
     data.createdAt = new Date().toISOString();
     data.updatedAt = new Date().toISOString();
     data.status = preActivated ? 'ACTIVE' : 'GUEST';
-    data.roles = ['user'];
+    data.roles = 'user';
     data.password = this.encryptPasswordString(data.password);
-    return (new this.model(data)).save().catch(err => {
+    return (new this.model(data)).save().catch((err) => {
       const constructErrors = field => ({ message: `"${field}" should be unique` });
       throw new exceptions.DuplicateRecord(Object.keys(err.errors).map(constructErrors));
     });
@@ -58,7 +58,7 @@ class User {
     const updatedAt = { updatedAt: new Date().toISOString() };
     const data = _.cloneDeep(input);
     if (data.password) data.password = this.encryptPasswordString(data.password);
-    return this.model.findByIdAndUpdate(userId, { $set: _.merge(updatedAt, data) }, { new: true }).catch(err => {
+    return this.model.findByIdAndUpdate(userId, { $set: _.merge(updatedAt, data) }, { new: true }).catch((err) => {
       const constructErrors = field => ({ message: `"${field}" should be unique` });
       throw new exceptions.DuplicateRecord(Object.keys(err.errors).map(constructErrors));
     });
@@ -94,7 +94,7 @@ class User {
    * @param sortby
    * @returns {*|Promise}
    */
-  queryUser(input, { page, limit, order, sortby } = {}) {
+  queryUser(input, { page, limit = config.listing.limit, order, sortby } = {}) {
     return new Promise((resolve, reject) => {
       let query = this.model.find(input);
       if (Number(page) > 0) query = query.skip((limit || config.listing.limit) * (page - 1));
@@ -146,7 +146,7 @@ class User {
     return this.queryUser({ email }).then((data) => {
       if (data.length === 0) throw new exceptions.PasswordMismatch();
       if (!this.verifyPassword(password, data[0].password)) throw new exceptions.PasswordMismatch();
-      if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
+      if (data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
       return data[0];
     });
   }

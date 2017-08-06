@@ -13,6 +13,7 @@ types:
   user-update: !include includes/schemas/put.users.update.json
   activate-user: !include includes/schemas/put.users.activate.json
   update-password: !include includes/schemas/put.users.update-password.json
+  update-roles: !include includes/schemas/put.users.update-roles.json
   create-meal: !include includes/schemas/post.meals.json
   update-meal: !include includes/schemas/put.meals.update.json
 
@@ -36,45 +37,6 @@ securitySchemes:
           description: |
             Access denied not valid privilage in resurces
 
-/auth:
-  description: Handles login, reset password, forgot password
-  /forgot-password:
-    description: Initiate forgot password.
-    post:
-      description: Initiate forgot password email
-      body:
-        application/json:
-          type: forgot-password
-          example: !include includes/examples/post.auth.forgot-password.req.json
-      responses:
-        200:
-          body:
-            application/json:
-              example: !include includes/examples/post.auth.forgot-password.res.json
-  /login:
-    post:
-      description: Login using email and password and get a jwt access token
-      body:
-        application/json:
-          type: login
-          example: !include includes/examples/post.auth.login.req.json
-      responses:
-        200:
-          body:
-            application/json:
-              example: !include includes/examples/post.auth.login.res.json
-  /reset-password:
-    post:
-      description: Reset user's password using email and unique code generated at forgot-password
-      body:
-        application/json:
-          type: reset-password
-          example: !include includes/examples/post.auth.reset-password.req.json
-      responses:
-        200:
-          body:
-            application/json:
-              example: !include includes/examples/post.auth.reset-password.res.json
 /users:
   get:
     securedBy: [jwt]
@@ -107,7 +69,7 @@ securitySchemes:
         type: create-user
         example: !include includes/examples/post.users.req.json
     responses:
-      200:
+      201:
         body:
           application/json:
             example: !include includes/examples/post.users.res.json
@@ -135,15 +97,15 @@ securitySchemes:
               example: !include includes/examples/get.users.user.res.json
     delete:
       securedBy: [jwt]
-      description: Delete a user record & linked meal records
+      description: Delete an user record & linked meal records
       responses:
-        200:
+        204:
           body:
             application/json:
               example: !include includes/examples/delete.users.user.res.json
     /activate:
       put:
-        description: Confirm a user account after user creation. This is a mandatory process before first time login
+        description: Confirm an user account after user creation. This is a mandatory process before first time login
         body:
           application/json:
             type: activate-user
@@ -156,7 +118,7 @@ securitySchemes:
     /password:
       put:
         securedBy: [jwt]
-        description: Update a user's password using user's token
+        description: Update an user's password using user's token
         body:
           application/json:
             type: update-password
@@ -166,10 +128,23 @@ securitySchemes:
             body:
               application/json:
                 example: !include includes/examples/put.users.update-password.res.json
+    /roles:
+      put:
+        securedBy: [jwt]
+        description: Update an user's role using admin's / user-manager's token
+        body:
+          application/json:
+            type: update-roles
+            example: !include includes/examples/put.users.update-roles.req.json
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include includes/examples/put.users.update-roles.res.json
     /meals:
       get:
         securedBy: [jwt]
-        description: List meal records associated with a user
+        description: List meal records associated with an user
         queryParameters:
           filter:
             description: "Accepts a filter query"
@@ -193,13 +168,13 @@ securitySchemes:
                 example: !include includes/examples/get.meals.res.json
       post:
         securedBy: [jwt]
-        description: Create a meal record for a user
+        description: Create a meal record for an user
         body:
           application/json:
             type: create-meal
             example: !include includes/examples/post.meals.req.json
         responses:
-          200:
+          202:
             body:
               application/json:
                 example: !include includes/examples/post.meals.res.json
@@ -212,7 +187,7 @@ securitySchemes:
               type: update-meal
               example: !include includes/examples/put.meals.update.req.json
           responses:
-            200:
+            202:
               body:
                 application/json:
                   example: !include includes/examples/put.meals.update.res.json
@@ -228,7 +203,46 @@ securitySchemes:
           securedBy: [jwt]
           description: Delete a meal belongs to user
           responses:
-            200:
+            204:
               body:
                 application/json:
                   example: !include includes/examples/delete.meals.meal.res.json
+/auth:
+  description: Handles login, reset password, forgot password
+  /login:
+      post:
+        description: Login using email and password and get a jwt access token
+        body:
+          application/json:
+            type: login
+            example: !include includes/examples/post.auth.login.req.json
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include includes/examples/post.auth.login.res.json
+  /forgot-password:
+    description: Initiate forgot password.
+    post:
+      description: Initiate forgot password email
+      body:
+        application/json:
+          type: forgot-password
+          example: !include includes/examples/post.auth.forgot-password.req.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include includes/examples/post.auth.forgot-password.res.json
+  /reset-password:
+    post:
+      description: Reset user's password using email and unique code generated at forgot-password
+      body:
+        application/json:
+          type: reset-password
+          example: !include includes/examples/post.auth.reset-password.req.json
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include includes/examples/post.auth.reset-password.res.json

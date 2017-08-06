@@ -1,5 +1,6 @@
-# REST API for the input of calories
-The backend app is designed to handle API requests for managing user and their consumed calories.
+# Calories REST Api
+The backend app is designed to handle API requests for managing users and their consumed calories.
+Refer API documentation for usage examples:
 
 ## System requirements
 For running the project locally the following requirements should be met.
@@ -9,8 +10,8 @@ For running the project locally the following requirements should be met.
 ## Installation
 A fresh installation of the project will usually involve the following steps:
 - Clone the repository with ```git clone URL```
-- Run ```yarn install``` at the project root.
 - Update common/config/index.js with actual values
+- Run ```yarn install``` at the project root.
 - Run ```yarn start``` to start the project.
 
 ## Running Test Cases

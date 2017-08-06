@@ -14,6 +14,7 @@ class RoleController {
   constructor(model) {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
+    this.getRole = this.getRole.bind(this);
     this.validateRole = this.validateRole.bind(this);
     this.getNextLevelRoles = this.getNextLevelRoles.bind(this);
   }
@@ -34,6 +35,24 @@ class RoleController {
   }
 
   /**
+   * Checks if a role exists before assigning it to user
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
+  getRole(req, res, next) {
+    this.model.queryRole({ name: req.body.roles })
+      .then((roleData) => {
+        if (!(roleData && roleData[0])) {
+          next(new exceptions.NotFound([{ message: 'Given "roles" does not exist' }]));
+        } else {
+          next();
+        }
+      });
+  }
+
+  /**
    * Validates if a role has influence on other role to perform a particular a action on its resource(users, meals)
    *
    * @param resource
@@ -48,8 +67,9 @@ class RoleController {
       }
 
       getUserRole.then(() => {
-        const permission = (req.user._id.toString() === (req.userId && req.userId._id.toString())) ? '_.' : '';
-        const input = { name: req.user.roles, permissions: `${permission}${resource}.${action}`, level: userRoleLevel };
+        const selfRequest = (req.user._id.toString() === (req.userId && req.userId._id.toString()));
+        const input = { name: req.user.roles, permissions: `${selfRequest ? '_.' : ''}${resource}.${action}` };
+        if (!selfRequest) input.level = userRoleLevel;
         return this.model.checkPermission(input)
           .then((result) => {
             if (result && result._id) {

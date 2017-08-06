@@ -6,7 +6,6 @@ const NutritionixClient = require('nutritionix');
 const config = require('common/config/config');
 
 class Meal {
-
   /**
    * Initializes Meal model
    *
@@ -64,6 +63,16 @@ class Meal {
   }
 
   /**
+   * Deletes all meals using userId
+   *
+   * @param mealId
+   * @returns {*|Promise}
+   */
+  deleteMealsByUserId(userId) {
+    return this.model.deleteMany({ userId });
+  }
+
+  /**
    * Fetches a meal using MealId
    *
    * @param mealId
@@ -83,7 +92,7 @@ class Meal {
    * @param sortby
    * @returns {*|Promise}
    */
-  queryMeal(input, { page, limit, order, sortby } = {}) {
+  queryMeal(input, { page, limit = config.listing.limit, order, sortby } = {}) {
     return new Promise((resolve, reject) => {
       let query = this.model.find(input);
       if (Number(page) > 0) query = query.skip((limit || config.listing.limit) * (page - 1));

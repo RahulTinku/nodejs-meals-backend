@@ -3,7 +3,7 @@
  *
  * @param string
  */
-const capitalize = (string) => (string.charAt(0).toUpperCase() + string.slice(1));
+const capitalize = string => (string.charAt(0).toUpperCase() + string.slice(1));
 
 /**
  * Converts a valid JSON schema to a valid mongoose schema
@@ -18,6 +18,7 @@ module.exports = (jsonSchema) => {
     schema[key] = {
       type: capitalize((properties[key].type)),
     };
+    if (schema[key].type === 'Array') schema[key] = [{ type: 'String' }];
     if ((jsonSchema.required || []).indexOf(key) > -1) schema[key].required = true;
     if ((properties[key]['m-unique'])) {
       schema[key].unique = true;

@@ -1,0 +1,21 @@
+{
+  "links": {},
+  "data": [
+    {
+      "id": "597df0a33ea39a6fe01463c1",
+      "type": "users",
+      "attributes": {
+        "firstName": "Vignes",
+        "lastName": "A",
+        "email": "vignes.arul@gmail.com",
+        "createdAt": "2017-07-30T14:43:47.296Z",
+        "updatedAt": "2017-08-03T08:22:53.293Z",
+        "status": "GUEST",
+        "roles": "user-manager",
+        "expectedCalories": 1000
+      }
+    }
+  ],
+  "errors": {},
+  "meta": {}
+}

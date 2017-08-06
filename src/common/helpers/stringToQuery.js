@@ -8,7 +8,7 @@ const _ = require('lodash');
  */
 const processQuery = (input) => {
   let queryString = trimSpaces(input);
-  let regEx = /([a-z_]+)( eq | ne | gt | lt )([a-z0-9_$\-'",\.\\\[\]\{\}\: ]+)/gi;
+  let regEx = /([a-z_]+)( eq | ne | gt | lt )([a-z0-9_@$\-'",\.\\\[\]\{\}\: ]+)/gi;
   const regEx1 = new RegExp(regEx);
   const keys = [];
   let match = regEx1.exec(queryString);
@@ -21,7 +21,7 @@ const processQuery = (input) => {
       match = regEx1.exec(queryString);
     }
 
-    regEx = /(\([a-z0-9_$\-'",\.\\\[\]\{\}\: ]+\))( (AND|OR) )(\([a-z0-9_$\-'",\.\\\[\]\{\}\: ]+\))/gi;
+    regEx = /(\([a-z0-9_@$\-'",\.\\\[\]\{\}\: ]+\))( (AND|OR) )(\([a-z0-9_@$\-'",\.\\\[\]\{\}\: ]+\))/gi;
     const regEx2 = new RegExp(regEx);
     match = regEx2.exec(queryString);
     while (match != null) {
@@ -42,10 +42,10 @@ const processQuery = (input) => {
  * @returns {*}
  */
 const trimSpaces = (input) => {
-  if(typeof input !== 'string') return '';
+  if (typeof input !== 'string') return '';
   let result = _.cloneDeep(input);
   const regEx = [{ regEx: /(\()( )/g, char: '(' }, { regEx: /( )(\))/g, char: ')' }];
-  regEx.forEach((reg) => (result = result.replace(reg.regEx, reg.char)));
+  regEx.forEach(reg => (result = result.replace(reg.regEx, reg.char)));
   return result;
 };
 

@@ -2,3 +2,4 @@ yarn.lock
 .idea
 node_modules
 api.html
+config.js.backup

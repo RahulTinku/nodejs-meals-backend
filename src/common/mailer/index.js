@@ -14,7 +14,6 @@ const exceptions = require('common/exceptions');
 const mailer = ({ to, template, userDetails } = {}) => {
   if (config.server.status === 'test') return Promise.resolve(202);
   return new Promise((resolve, reject) => {
-    if (config.server)
     if (!to || !userDetails || !template) new exceptions.InvalidInput();
     const templateDetails = config.mail.sendgrid.templates[template];
     const fromEmail = new helper.Email(config.mail.fromEmail);
@@ -30,17 +29,17 @@ const mailer = ({ to, template, userDetails } = {}) => {
     const request = sg.emptyRequest({
       method: 'POST',
       path: '/v3/mail/send',
-      body: mail.toJSON()
+      body: mail.toJSON(),
     });
 
-    sg.API(request, function (error, response) {
+    sg.API(request, (error, response) => {
       if (error) {
         console.log('Error response received');
-        reject(error)
+        reject(error);
       }
       resolve(response.statusCode);
     });
-  })
+  });
 };
 
 module.exports = mailer;

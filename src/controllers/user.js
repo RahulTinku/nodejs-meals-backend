@@ -31,6 +31,7 @@ class UserController {
     this.removeUser = this.removeUser.bind(this);
     this.populateParamsUserId = this.populateParamsUserId.bind(this);
     this.populateTokenUser = this.populateTokenUser.bind(this);
+    this.updateRoles = this.updateRoles.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.forgotPassword = this.forgotPassword.bind(this);
     this.resetPassword = this.resetPassword.bind(this);
@@ -57,7 +58,7 @@ class UserController {
         mailer({
           to: result.email,
           userDetails: _.merge({ password: body.password, code: (result.verification || {}).code }, _.pick(result, 'firstName')),
-          template: preActivated ? 'activeNewUser' : 'newUser'
+          template: preActivated ? 'activeNewUser' : 'newUser',
         })]))
       .catch(error => next(error));
   }
@@ -88,7 +89,7 @@ class UserController {
    * @param next
    */
   activateUser(req, res, next) {
-    if(req.userId.status === 'GUEST' && (req.userId.verification || {}).code === req.body.code) {
+    if (req.userId.status === 'GUEST' && (req.userId.verification || {}).code === req.body.code) {
       this.model.updateUser(req.userId._id, { status: 'ACTIVE', verification: {} })
         .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
         .catch(error => next(error));
@@ -168,6 +169,22 @@ class UserController {
   }
 
   /**
+   * Handles update role request for a user
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
+  updateRoles(req, res, next) {
+    const body = _.cloneDeep(req.body);
+    validator.buildParams({ input: body, schema: this.jsonSchema.updateRolesSchema })
+      .then(input => validator.validate({ input, schema: this.jsonSchema.updateRolesSchema }))
+      .then(input => this.model.updateUser(req.userId._id, { roles: input.roles }))
+      .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
+      .catch(error => next(error));
+  }
+
+  /**
    * Handles forgot-password request.
    * Initiates a email to user's email with verification code to be used to reset password
    *
@@ -177,6 +194,8 @@ class UserController {
    */
   forgotPassword(req, res, next) {
     const body = _.cloneDeep(req.body);
+    let updateUserPromise = Promise.resolve();
+    let mailerPromise = Promise.resolve();
     validator.buildParams({ input: body, schema: this.jsonSchema.forgotPasswordSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.forgotPasswordSchema }))
       .then(input => this.model.queryUser(input))
@@ -184,13 +203,15 @@ class UserController {
         if (result && result[0]) {
           const code = uuid();
           const input = { verification: { code, expiry: dateConverter.addTimeIso(15, 'm'), attempts: 0, resendAttempt: 0 } };
-          return this.model.updateUser(result[0]._id, input);
+          updateUserPromise = this.model.updateUser(result[0]._id, input);
+          mailerPromise = mailer({ to: result[0].email,
+            userDetails: {
+              firstName: result[0].firstName, code: input.verification.code },
+            template: 'forgotPassword' });
         }
-        throw new exceptions.NotFound();
+        updateUserPromise = updateUserPromise.then(() => res.status(202).send(serializer.serialize()));
+        return Promise.all([updateUserPromise, mailerPromise]);
       })
-      .then(result => Promise.all([res.status(202).send(serializer.serialize()),
-        mailer({to: result.email, userDetails: {
-        firstName: result.firstName, code: result.verification.code }, template: 'forgotPassword'})]))
       .catch(error => next(error));
   }
 
@@ -204,18 +225,23 @@ class UserController {
    */
   resetPassword(req, res, next) {
     const body = _.cloneDeep(req.body);
+    const newPassword = dateConverter.getRandomNumber(10).toString();
     validator.buildParams({ input: body, schema: this.jsonSchema.resetPasswordSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.resetPasswordSchema }))
       .then(input => this.model.queryUser({ 'verification.code': input.code, email: input.email }))
       .then((result) => {
         if (result && result[0]) {
           const code = uuid();
-          const input = { verification: {}, password: dateConverter.getRandomNumber(10).toString() };
+          const input = { verification: {}, password: newPassword };
           return this.model.updateUser(result[0]._id, input);
         }
         throw new exceptions.NotFound();
       })
-      .then(result => res.status(200).send(serializer.serialize()))
+      .then(result => Promise.all[res.status(200).send(serializer.serialize()),
+        mailer({ to: result.email,
+          userDetails: {
+            firstName: result.firstName, password: newPassword },
+          template: 'resetPassword' })])
       .catch(error => next(error));
   }
 
@@ -228,7 +254,7 @@ class UserController {
    */
   removeUser(req, res, next) {
     this.model.deleteUser(req.userId._id)
-      .then(result => res.status(204).send(serializer.serialize(result, { type: 'users' })))
+      .then(result => next())
       .catch(error => next(error));
   }
 
@@ -241,9 +267,12 @@ class UserController {
    */
   populateParamsUserId(req, res, next) {
     this.model.getUser(req.params.userId).then((userData) => {
-      if (!userData) next(new exceptions.NotFound());
-      req.userId = userData;
-      next();
+      if (!userData) {
+        next(new exceptions.NotFound());
+      } else {
+        req.userId = userData;
+        next();
+      }
     }).catch(error => next(error));
   }
 
@@ -264,7 +293,7 @@ class UserController {
           }
         });
       }
-    }
+    };
   }
 }
 
