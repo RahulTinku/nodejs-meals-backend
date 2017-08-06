@@ -16,6 +16,7 @@ types:
   update-roles: !include includes/schemas/put.users.update-roles.json
   create-meal: !include includes/schemas/post.meals.json
   update-meal: !include includes/schemas/put.meals.update.json
+  create-role: !include includes/schemas/post.roles.json
 
 securitySchemes:
   jwt:
@@ -246,3 +247,16 @@ securitySchemes:
           body:
             application/json:
               example: !include includes/examples/post.auth.reset-password.res.json
+/roles:
+  post:
+    securedBy: [jwt]
+    description: Create new role
+    body:
+      application/json:
+        type: create-role
+        example: !include includes/examples/post.roles.req.json
+    responses:
+      201:
+        body:
+          application/json:
+            example: !include includes/examples/post.roles.res.json

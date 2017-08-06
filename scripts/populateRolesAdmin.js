@@ -8,7 +8,7 @@ const roles = [{
   "name" : "admin",
   "permissions" : [
     "_.users.read", "_.users.write", "_.users.update", "_.users.delete", "meals.read", "meals.write",
-    "meals.update", "meals.delete", "users.read", "users.write", "users.update", "users.delete"
+    "meals.update", "meals.delete", "users.read", "users.write", "users.update", "users.delete", "roles.write"
   ],
   "level" : 1
 },

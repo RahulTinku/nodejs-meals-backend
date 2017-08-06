@@ -1,0 +1,27 @@
+{
+  "links": {},
+  "data": [
+    {
+      "id": "598761e92baea85b24425cbb",
+      "type": "roles",
+      "attributes": {
+        "name": "user-man",
+        "level": 2,
+        "createdAt": "2017-08-06T18:37:29.401Z",
+        "updatedAt": "2017-08-06T18:37:29.401Z",
+        "permissions": [
+          "_.users.read",
+          "_.users.write",
+          "_.users.update",
+          "_.users.delete",
+          "users.read",
+          "users.write",
+          "users.update",
+          "users.delete"
+        ]
+      }
+    }
+  ],
+  "errors": {},
+  "meta": {}
+}

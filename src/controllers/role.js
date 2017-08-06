@@ -1,6 +1,10 @@
+const validator = require('common/helpers/validator');
 const Promise = require('bluebird');
 const _ = require('lodash');
 const exceptions = require('common/exceptions');
+const Serializer = require('common/serializer');
+
+const serializer = new Serializer();
 
 class RoleController {
   /**
@@ -13,9 +17,26 @@ class RoleController {
   constructor(model) {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
+    this.addRole = this.addRole.bind(this);
     this.getRole = this.getRole.bind(this);
     this.validateRole = this.validateRole.bind(this);
     this.getNextLevelRoles = this.getNextLevelRoles.bind(this);
+  }
+
+  /**
+   * Handles add role request
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
+  addRole(req, res, next) {
+    const body = _.cloneDeep(req.body);
+    validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
+      .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
+      .then(input => this.model.addRole(input))
+      .then(result => res.status(201).send(serializer.serialize(result, { type: 'roles' })))
+      .catch(error => next(error));
   }
 
   /**

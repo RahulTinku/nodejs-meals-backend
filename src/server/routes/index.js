@@ -22,6 +22,8 @@ const routes = (express, app, { user, access, role, meal }) => {
   route.get('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'read'), meal.verifyMealOwner, meal.showMeal);
   route.delete('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'delete'), meal.verifyMealOwner, meal.removeMeal);
 
+  route.post('/roles', access.verifyAuth(), user.populateTokenUser(), role.validateRole('roles', 'write'), role.addRole);
+
   app.use(`/api/${config.server.version}`, route);
 };
 

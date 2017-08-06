@@ -1,0 +1,8 @@
+{
+  "name": "user-manager",
+  "permissions": [
+    "_.users.read", "_.users.write", "_.users.update", "_.users.delete", "users.read", "users.write",
+    "users.update", "users.delete"
+  ],
+  "level": 2
+}
