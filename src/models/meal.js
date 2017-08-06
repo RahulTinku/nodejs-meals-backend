@@ -6,7 +6,6 @@ const NutritionixClient = require('nutritionix');
 const config = require('common/config/config');
 
 class Meal {
-
   /**
    * Initializes Meal model
    *

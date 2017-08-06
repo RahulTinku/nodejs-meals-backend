@@ -29,17 +29,17 @@ const mailer = ({ to, template, userDetails } = {}) => {
     const request = sg.emptyRequest({
       method: 'POST',
       path: '/v3/mail/send',
-      body: mail.toJSON()
+      body: mail.toJSON(),
     });
 
-    sg.API(request, function (error, response) {
+    sg.API(request, (error, response) => {
       if (error) {
         console.log('Error response received');
-        reject(error)
+        reject(error);
       }
       resolve(response.statusCode);
     });
-  })
+  });
 };
 
 module.exports = mailer;

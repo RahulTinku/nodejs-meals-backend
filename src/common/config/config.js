@@ -2,13 +2,13 @@ module.exports = {
   server: {
     port: 3000,
     version: 'v1',
-    status: 'test', //test || live
+    status: 'test', // test || live
     host: 'http://localhost:3000/api/v1',
-    //host: 'https://desolate-coast-39570.herokuapp.com/api/v1',
+    // host: 'https://desolate-coast-39570.herokuapp.com/api/v1',
   },
   database: {
     uri: 'mongodb://localhost:27017/calories',
-    //uri: 'mongodb://devuser:sadfasdfgdf@ds123933.mlab.com:23933/calories',
+    // uri: 'mongodb://devuser:sadfasdfgdf@ds123933.mlab.com:23933/calories',
     table: '',
   },
   logger: {
@@ -31,11 +31,11 @@ module.exports = {
       templates: {
         newUser: {
           subject: 'Verify your account',
-          templateId: '4a4cb1f4-bbff-4d52-89ff-0804e500ece9'
+          templateId: '4a4cb1f4-bbff-4d52-89ff-0804e500ece9',
         },
         activeNewUser: {
           subject: 'New account details',
-          templateId: 'ca92cef7-f790-4111-b72c-d7e686133c68'
+          templateId: 'ca92cef7-f790-4111-b72c-d7e686133c68',
         },
         forgotPassword: {
           subject: 'Password Reset',
@@ -45,8 +45,8 @@ module.exports = {
           subject: 'New Password',
           templateId: '50d9a559-2549-4a9d-9809-8aeeb2013754',
         },
-      }
+      },
     },
-    fromEmail: 'vignes.arul@gmail.com'
-  }
+    fromEmail: 'vignes.arul@gmail.com',
+  },
 };

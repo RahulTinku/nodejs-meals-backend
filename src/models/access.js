@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
 class Access {
-
   /**
    * Initializes Access model
    *

@@ -68,7 +68,7 @@ class RoleController {
 
       getUserRole.then(() => {
         const selfRequest = (req.user._id.toString() === (req.userId && req.userId._id.toString()));
-        const input = { name: req.user.roles, permissions: `${selfRequest ? '_.' : ''}${resource}.${action}`};
+        const input = { name: req.user.roles, permissions: `${selfRequest ? '_.' : ''}${resource}.${action}` };
         if (!selfRequest) input.level = userRoleLevel;
         return this.model.checkPermission(input)
           .then((result) => {

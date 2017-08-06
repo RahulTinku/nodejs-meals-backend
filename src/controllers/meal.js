@@ -41,10 +41,10 @@ class MealController {
     const body = _.merge(req.body, { userId: req.userId.id });
     validator.buildParams({ input: body, schema: this.jsonSchema.postSchema })
       .then(input => validator.validate({ input, schema: this.jsonSchema.postSchema }))
-      .then((input) => _.merge(input, { autoFetch: (!input.calories) }))
+      .then(input => _.merge(input, { autoFetch: (!input.calories) }))
       .then(input => this.model.addMeal(input))
       .then(result => Promise.all([res.status(202).send(serializer.serialize(_.omit(result.toObject(), ['dailyGoal']), { type: 'meals' })),
-        this.updateCaloriesAndDailyGoal({expCal: Number(req.userId.expectedCalories), id: result.id })
+        this.updateCaloriesAndDailyGoal({ expCal: Number(req.userId.expectedCalories), id: result.id }),
       ]))
       .catch(error => next(error));
   }
@@ -60,18 +60,14 @@ class MealController {
     return this.model.getMeal(input.id)
       .then((meal) => {
         let updatePromise = Promise.resolve(meal);
-        if(meal.autoFetch) {
-          updatePromise = updatePromise.then((mealDetails) => {
-            return this.model.getNutriCalories(mealDetails.text)
-              .then(calories => _.merge(mealDetails, { calories }));
-          })
+        if (meal.autoFetch) {
+          updatePromise = updatePromise.then(mealDetails => this.model.getNutriCalories(mealDetails.text)
+            .then(calories => _.merge(mealDetails, { calories })));
         }
-        return updatePromise.then((mealDetails) => {
-          return this.model.getConsumedCalorie(_.pick(mealDetails, ['userId', 'date']))
-            .then(consumedCalorie => this.model.updateMeal(mealDetails.id, _.merge(_.pick(mealDetails, 'calories'), {
-              dailyGoal: ((consumedCalorie + (mealDetails.calories || 0)) < input.expCal)
-            })));
-        });
+        return updatePromise.then(mealDetails => this.model.getConsumedCalorie(_.pick(mealDetails, ['userId', 'date']))
+          .then(consumedCalorie => this.model.updateMeal(mealDetails.id, _.merge(_.pick(mealDetails, 'calories'), {
+            dailyGoal: ((consumedCalorie + (mealDetails.calories || 0)) < input.expCal),
+          }))));
       });
   }
 
@@ -127,7 +123,7 @@ class MealController {
       .then(input => (input.calories ? _.merge(input, { autoFetch: false }) : input))
       .then(input => this.model.updateMeal(req.params.mealId, input))
       .then(result => Promise.all([res.status(202).send(serializer.serialize(_.omit(result.toObject(), ['dailyGoal']), { type: 'meals' })),
-        this.updateCaloriesAndDailyGoal({expCal: Number(req.userId.expectedCalories), id: result.id })
+        this.updateCaloriesAndDailyGoal({ expCal: Number(req.userId.expectedCalories), id: result.id }),
       ]))
       .catch(error => next(error));
   }

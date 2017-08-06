@@ -58,7 +58,7 @@ class UserController {
         mailer({
           to: result.email,
           userDetails: _.merge({ password: body.password, code: (result.verification || {}).code }, _.pick(result, 'firstName')),
-          template: preActivated ? 'activeNewUser' : 'newUser'
+          template: preActivated ? 'activeNewUser' : 'newUser',
         })]))
       .catch(error => next(error));
   }
@@ -89,7 +89,7 @@ class UserController {
    * @param next
    */
   activateUser(req, res, next) {
-    if(req.userId.status === 'GUEST' && (req.userId.verification || {}).code === req.body.code) {
+    if (req.userId.status === 'GUEST' && (req.userId.verification || {}).code === req.body.code) {
       this.model.updateUser(req.userId._id, { status: 'ACTIVE', verification: {} })
         .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
         .catch(error => next(error));
@@ -204,8 +204,10 @@ class UserController {
           const code = uuid();
           const input = { verification: { code, expiry: dateConverter.addTimeIso(15, 'm'), attempts: 0, resendAttempt: 0 } };
           updateUserPromise = this.model.updateUser(result[0]._id, input);
-          mailerPromise = mailer({to: result[0].email, userDetails: {
-            firstName: result[0].firstName, code: input.verification.code }, template: 'forgotPassword'});
+          mailerPromise = mailer({ to: result[0].email,
+            userDetails: {
+              firstName: result[0].firstName, code: input.verification.code },
+            template: 'forgotPassword' });
         }
         updateUserPromise = updateUserPromise.then(() => res.status(202).send(serializer.serialize()));
         return Promise.all([updateUserPromise, mailerPromise]);
@@ -236,8 +238,10 @@ class UserController {
         throw new exceptions.NotFound();
       })
       .then(result => Promise.all[res.status(200).send(serializer.serialize()),
-        mailer({to: result.email, userDetails: {
-          firstName: result.firstName, password: newPassword }, template: 'resetPassword'})])
+        mailer({ to: result.email,
+          userDetails: {
+            firstName: result.firstName, password: newPassword },
+          template: 'resetPassword' })])
       .catch(error => next(error));
   }
 
@@ -289,7 +293,7 @@ class UserController {
           }
         });
       }
-    }
+    };
   }
 }
 

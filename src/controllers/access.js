@@ -54,7 +54,7 @@ class AccessController {
           .then(() => next())
           .catch(error => next(error));
       }
-    }
+    };
   }
 }
 

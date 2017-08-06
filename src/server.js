@@ -41,5 +41,5 @@ dbConnection.connect().then(() => {
 
 module.exports = {
   app,
-  dbConnection
+  dbConnection,
 };

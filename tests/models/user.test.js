@@ -74,7 +74,7 @@ test.cb('it verifies login credentials', (t) => {
   user.verifyLogin(mockData.email, mockData.password).catch((err) => {
     t.is(err.message, 'User Not Active');
     t.end();
-  })
+  });
 });
 
 test.cb('it deletes an user', (t) => {

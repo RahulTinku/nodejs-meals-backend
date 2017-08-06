@@ -38,7 +38,7 @@ test.cb.before('it should activate user account', (t) => {
   dbConnection.getModels().user.getUser(userId).then((userDetails) => {
     request
       .put(`/users/${userId}/activate`)
-      .send({ code:  userDetails.verification.code})
+      .send({ code: userDetails.verification.code })
       .type('json')
       .expect('Content-Type', /json/)
       .expect(200)
@@ -46,8 +46,8 @@ test.cb.before('it should activate user account', (t) => {
         t.is(res.body.data[0].id, userId);
         t.is(res.body.data[0].attributes.status, 'ACTIVE');
         t.end();
-      }).catch(err => console.log(err))
-  }).catch(err => console.log(err))
+      }).catch(err => console.log(err));
+  }).catch(err => console.log(err));
 });
 
 test.cb.before('it should allow user to login', (t) => {
@@ -77,7 +77,7 @@ test.cb.before('it should allow admin to login', (t) => {
       dbConnection.getModels().access.verifyToken(adminToken).then((tokenDetails) => {
         adminId = tokenDetails.userId;
         t.end();
-      })
+      });
     }).catch(err => console.log(err));
 });
 
@@ -94,7 +94,7 @@ test.cb.before('it should allow user-manager to login', (t) => {
       dbConnection.getModels().access.verifyToken(umToken).then((tokenDetails) => {
         umId = tokenDetails.userId;
         t.end();
-      })
+      });
     }).catch(err => console.log(err));
 });
 
@@ -148,7 +148,7 @@ test.cb('POST /users/:userId/meals - it should allow user to add a meal without 
             t.is(res.body.data[0].attributes.calories, 19);
             t.truthy(_.isEqual(res.body.data[0].id, userAutoCalMealId));
             t.end();
-          })
+          });
       };
       setTimeout(afterWait, 3000);
     }).catch(err => console.log(err));
@@ -267,7 +267,7 @@ test.cb('GET /users/:userId/meals/:mealId - it should not allow user-manager to 
     .get(`/users/${secondaryUserId}/meals/${secondaryMealId}`)
     .set('Authorization', umToken)
     .expect('Content-Type', /json/)
-    .expect(401, t.end)
+    .expect(401, t.end);
 });
 
 test.cb('GET /users/:userId/meals/:mealId - it should not allow user to view other user\'s meal details - Method 1', (t) => {
@@ -418,7 +418,7 @@ test.cb('PUT /users/:userId/meals/:mealId - it should throw error if input is ma
     .put(`/users/${userId}/meals/${userMealId}`)
     .set('Authorization', userToken)
     .type('json')
-    .send({ date:'1234567' })
+    .send({ date: '1234567' })
     .expect('Content-Type', /json/)
     .expect(400, t.end);
 });

@@ -41,7 +41,7 @@ class User {
     data.status = preActivated ? 'ACTIVE' : 'GUEST';
     data.roles = 'user';
     data.password = this.encryptPasswordString(data.password);
-    return (new this.model(data)).save().catch(err => {
+    return (new this.model(data)).save().catch((err) => {
       const constructErrors = field => ({ message: `"${field}" should be unique` });
       throw new exceptions.DuplicateRecord(Object.keys(err.errors).map(constructErrors));
     });
@@ -58,7 +58,7 @@ class User {
     const updatedAt = { updatedAt: new Date().toISOString() };
     const data = _.cloneDeep(input);
     if (data.password) data.password = this.encryptPasswordString(data.password);
-    return this.model.findByIdAndUpdate(userId, { $set: _.merge(updatedAt, data) }, { new: true }).catch(err => {
+    return this.model.findByIdAndUpdate(userId, { $set: _.merge(updatedAt, data) }, { new: true }).catch((err) => {
       const constructErrors = field => ({ message: `"${field}" should be unique` });
       throw new exceptions.DuplicateRecord(Object.keys(err.errors).map(constructErrors));
     });
@@ -146,7 +146,7 @@ class User {
     return this.queryUser({ email }).then((data) => {
       if (data.length === 0) throw new exceptions.PasswordMismatch();
       if (!this.verifyPassword(password, data[0].password)) throw new exceptions.PasswordMismatch();
-      if(data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
+      if (data[0].status !== 'ACTIVE') throw new exceptions.UserNotActive();
       return data[0];
     });
   }

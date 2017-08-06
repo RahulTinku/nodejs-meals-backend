@@ -25,7 +25,7 @@ const postSchema = {
 const updateSchema = {
   type: 'object',
   properties: _.pick(user, ['firstName', 'lastName', 'email', 'expectedCalories', 'phone']),
-  anyOf: ['firstName', 'lastName', 'email', 'expectedCalories', 'phone'].map((key) => ({ required: [`${key}`] })),
+  anyOf: ['firstName', 'lastName', 'email', 'expectedCalories', 'phone'].map(key => ({ required: [`${key}`] })),
   additionalProperties: false,
 };
 
@@ -38,7 +38,7 @@ const updatePasswordSchema = {
 
 const updateRolesSchema = {
   type: 'object',
-  properties:  _.pick(user, ['roles']),
+  properties: _.pick(user, ['roles']),
   required: ['roles'],
   additionalProperties: false,
 };

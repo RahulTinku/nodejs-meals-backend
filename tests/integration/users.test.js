@@ -34,7 +34,7 @@ test.cb('POST /users - it should allow to activate the account', (t) => {
   dbConnection.getModels().user.getUser(userId).then((userDetails) => {
     request
       .put(`/users/${userId}/activate`)
-      .send({ code:  userDetails.verification.code})
+      .send({ code: userDetails.verification.code })
       .type('json')
       .expect('Content-Type', /json/)
       .expect(200)
@@ -42,8 +42,8 @@ test.cb('POST /users - it should allow to activate the account', (t) => {
         t.is(res.body.data[0].id, userId);
         t.is(res.body.data[0].attributes.status, 'ACTIVE');
         t.end();
-      }).catch(err => console.log(err))
-  }).catch(err => console.log(err))
+      }).catch(err => console.log(err));
+  }).catch(err => console.log(err));
 });
 
 test.cb('POST /users - it should throw error if exisiting email is used to create account', (t) => {
@@ -96,7 +96,7 @@ test.cb('POST /users - it should throw error if email field is malformed', (t) =
   request
     .post('/users')
     .type('json')
-    .send(_.merge({email: 'abc'}, _.omit(userMock, 'email')))
+    .send(_.merge({ email: 'abc' }, _.omit(userMock, 'email')))
     .expect('Content-Type', /json/)
     .expect(400, t.end);
 });
@@ -122,7 +122,7 @@ test.cb('POST /auth/login - it should throw error if email field is missing', (t
     .type('json')
     .send(_.pick(userMock, ['password']))
     .expect('Content-Type', /json/)
-    .expect(400, t.end)
+    .expect(400, t.end);
 });
 
 test.cb('POST /auth/login - it should throw error if password field is missing', (t) => {
@@ -131,16 +131,16 @@ test.cb('POST /auth/login - it should throw error if password field is missing',
     .type('json')
     .send(_.pick(userMock, ['email']))
     .expect('Content-Type', /json/)
-    .expect(400, t.end)
+    .expect(400, t.end);
 });
 
 test.cb('POST /auth/login - it should throw error if credentials are incorrect', (t) => {
   request
     .post('/auth/login')
     .type('json')
-    .send({ email: '1@1.com', password: 'xxxxxxxxxx'})
+    .send({ email: '1@1.com', password: 'xxxxxxxxxx' })
     .expect('Content-Type', /json/)
-    .expect(401, t.end)
+    .expect(401, t.end);
 });
 
 test.cb('POST /auth/login - it should allow admin to login', (t) => {
@@ -417,9 +417,9 @@ test.cb('POST /auth/reset-password - it should allow user to reset password', (t
     request
       .post('/auth/reset-password')
       .type('json')
-      .send({ email: userMock.email, code: userDetails.verification.code})
+      .send({ email: userMock.email, code: userDetails.verification.code })
       .expect('Content-Type', /json/)
-      .expect(200, t.end)
+      .expect(200, t.end);
   });
 });
 
@@ -427,7 +427,7 @@ test.cb('POST /auth/reset-password - it should throw error if code is incorrect'
   request
     .post('/auth/reset-password')
     .type('json')
-    .send({ email: userMock.email, code: '123'})
+    .send({ email: userMock.email, code: '123' })
     .expect('Content-Type', /json/)
     .expect(404, t.end);
 });

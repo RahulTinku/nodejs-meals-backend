@@ -42,10 +42,10 @@ const processQuery = (input) => {
  * @returns {*}
  */
 const trimSpaces = (input) => {
-  if(typeof input !== 'string') return '';
+  if (typeof input !== 'string') return '';
   let result = _.cloneDeep(input);
   const regEx = [{ regEx: /(\()( )/g, char: '(' }, { regEx: /( )(\))/g, char: ')' }];
-  regEx.forEach((reg) => (result = result.replace(reg.regEx, reg.char)));
+  regEx.forEach(reg => (result = result.replace(reg.regEx, reg.char)));
   return result;
 };
 

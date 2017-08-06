@@ -33,7 +33,7 @@ class Role {
     const data = _.cloneDeep(input);
     data.createdAt = new Date().toISOString();
     data.updatedAt = new Date().toISOString();
-    return (new this.model(data)).save().catch(err => {
+    return (new this.model(data)).save().catch((err) => {
       const constructErrors = field => ({ message: `"${field}" should be unique` });
       throw new exceptions.DuplicateRecord(Object.keys(err.errors).map(constructErrors));
     });
