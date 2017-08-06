@@ -14,7 +14,7 @@
   },
   "scripts": {
     "docs": "mkdir -p docs/html & raml2html -i docs/raml/api.raml -o docs/html/api.html",
-    "start": "NODE_PATH=./src nodemon ./src/server.js",
+    "start": "NODE_PATH=./src node ./src/server.js",
     "test": "yarn start & NODE_PATH=./src ava --fail-fast --watch --verbose --serial",
     "postinstall": "(NODE_PATH=./src node scripts/populateRolesAdmin.js) &"
   },
