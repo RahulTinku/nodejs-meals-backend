@@ -1,8 +1,11 @@
 {
   "name": "project-vignes-aruljothi",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "REST API for the input of calories",
-  "main": "index.js",
+  "main": "./src/server.js",
+  "author": "Vignes Aruljothi <vignes.arul@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
   "directories": {
     "test": "tests"
   },
@@ -10,7 +13,7 @@
     "node": ">=6.10.0"
   },
   "scripts": {
-    "docs": "mkdir docs/html & raml2html -i docs/raml/api.raml -o docs/html/api.html",
+    "docs": "mkdir -p docs/html & raml2html -i docs/raml/api.raml -o docs/html/api.html",
     "start": "NODE_PATH=./src nodemon ./src/server.js",
     "test": "yarn start & NODE_PATH=./src ava --fail-fast --watch --verbose --serial",
     "postinstall": "(NODE_PATH=./src node scripts/populateRolesAdmin.js) &"
@@ -19,15 +22,12 @@
     "type": "git",
     "url": "git@git.toptal.com:Martin-Gouws/project-vignes-aruljothi.git"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "bunyan": "^1.8.10",
     "express": "^4.15.3",
-    "json-schema-faker": "^0.4.3",
     "jsonschema": "^1.1.1",
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.4",
@@ -43,6 +43,7 @@
     "eslint": "^4.3.0",
     "eslint-config-airbnb-base": "^11.3.1",
     "eslint-plugin-import": "^2.7.0",
+    "json-schema-faker": "^0.4.3",
     "raml2html": "^6.4.1",
     "supertest": "^3.0.0"
   }
