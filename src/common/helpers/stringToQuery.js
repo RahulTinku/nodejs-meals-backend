@@ -36,7 +36,7 @@ const processQuery = (input) => {
     }
     return { query: JSON.parse(queryString.replace(/^(\()(.*)(\))$/, '$2')), keys };
   } catch (error) {
-    return new exceptions.InvalidFilterQuery();
+    throw new exceptions.InvalidFilterQuery();
   }
 };
 
