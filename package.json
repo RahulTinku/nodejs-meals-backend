@@ -10,7 +10,7 @@
     "node": ">=6.10.0"
   },
   "scripts": {
-    "docs": "raml2html -i docs/raml/api.raml -o api.html",
+    "docs": "raml2html -i docs/raml/api.raml -o docs/raml/api.html",
     "start": "NODE_PATH=./src nodemon ./src/server.js",
     "test": "yarn start & NODE_PATH=./src ava --fail-fast --watch --verbose --serial",
     "postinstall": "(NODE_PATH=./src node scripts/populateRolesAdmin.js) &"
