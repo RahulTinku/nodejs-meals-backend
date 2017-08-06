@@ -1,6 +1,7 @@
 # Calories REST Api
 The backend app is designed to handle API requests for managing users and their consumed calories.
-Refer API documentation for usage examples:
+Refer API documentation for usage examples: http://vignesarul.info/docs/
+Server Url: http://vignesarul.info/api/v1
 
 ## System requirements
 For running the project locally the following requirements should be met.
