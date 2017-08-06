@@ -3,8 +3,8 @@ module.exports = {
     port: 3000,
     version: 'v1',
     status: 'test', //test || live
-    host: 'http://localhost:3000/v1',
-    //host: 'https://desolate-coast-39570.herokuapp.com',
+    host: 'http://localhost:3000/api/v1',
+    //host: 'https://desolate-coast-39570.herokuapp.com/api/v1',
   },
   database: {
     uri: 'mongodb://localhost:27017/calories',

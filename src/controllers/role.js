@@ -14,6 +14,7 @@ class RoleController {
   constructor(model) {
     this.model = model;
     this.jsonSchema = model.getJsonSchema();
+    this.getRole = this.getRole.bind(this);
     this.validateRole = this.validateRole.bind(this);
     this.getNextLevelRoles = this.getNextLevelRoles.bind(this);
   }
@@ -30,6 +31,24 @@ class RoleController {
       .then((roleData) => {
         req.user.nextLevelRoles = _.map(roleData, 'name');
         next();
+      });
+  }
+
+  /**
+   * Checks if a role exists before assigning it to user
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
+  getRole(req, res, next) {
+    this.model.queryRole({ name: req.body.roles })
+      .then((roleData) => {
+        if (!(roleData && roleData[0])) {
+          next(new exceptions.NotFound([{ message: 'Given "roles" does not exist' }]));
+        } else {
+          next();
+        }
       });
   }
 

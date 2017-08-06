@@ -36,6 +36,13 @@ const updatePasswordSchema = {
   additionalProperties: false,
 };
 
+const updateRolesSchema = {
+  type: 'object',
+  properties:  _.pick(user, ['roles']),
+  required: ['roles'],
+  additionalProperties: false,
+};
+
 const resetPasswordSchema = {
   type: 'object',
   properties: _.merge({ code: { type: 'string' } }, _.pick(user, 'email')),
@@ -71,4 +78,5 @@ module.exports = {
   updatePasswordSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  updateRolesSchema,
 };

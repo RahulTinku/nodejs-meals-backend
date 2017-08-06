@@ -12,6 +12,7 @@ const routes = (express, app, { user, access, role, meal }) => {
   route.put('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'update'), user.updateUser);
   route.put('/users/:userId/activate', user.populateParamsUserId, user.activateUser);
   route.put('/users/:userId/password', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'update'), user.updatePassword);
+  route.put('/users/:userId/roles', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'delete'), role.getRole, user.updateRoles);
   route.get('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'read'), user.showUser);
   route.delete('/users/:userId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('users', 'delete'), user.removeUser, meal.removeMealsByUserId);
 
@@ -21,7 +22,7 @@ const routes = (express, app, { user, access, role, meal }) => {
   route.get('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'read'), meal.verifyMealOwner, meal.showMeal);
   route.delete('/users/:userId/meals/:mealId', access.verifyAuth(), user.populateParamsUserId, user.populateTokenUser(), role.validateRole('meals', 'delete'), meal.verifyMealOwner, meal.removeMeal);
 
-  app.use(`/${config.server.version}`, route);
+  app.use(`/api/${config.server.version}`, route);
 };
 
 module.exports = routes;

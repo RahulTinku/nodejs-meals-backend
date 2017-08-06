@@ -113,7 +113,7 @@ test.cb('POST /auth/login - it should allow user to login', (t) => {
       t.truthy(res.body.data[0].attributes.access_token);
       userToken = res.body.data[0].attributes.access_token;
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('POST /auth/login - it should throw error if email field is missing', (t) => {
@@ -154,7 +154,7 @@ test.cb('POST /auth/login - it should allow admin to login', (t) => {
       t.truthy(res.body.data[0].attributes.access_token);
       adminToken = res.body.data[0].attributes.access_token;
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('POST /auth/login - it should allow user-manager to login', (t) => {
@@ -168,7 +168,7 @@ test.cb('POST /auth/login - it should allow user-manager to login', (t) => {
       t.truthy(res.body.data[0].attributes.access_token);
       umToken = res.body.data[0].attributes.access_token;
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('POST /users - it should allow admin to create a new active user', (t) => {
@@ -183,7 +183,7 @@ test.cb('POST /users - it should allow admin to create a new active user', (t) =
       t.is(res.body.data[0].attributes.status, 'ACTIVE');
       secondaryUserId = res.body.data[0].id;
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 
@@ -199,7 +199,7 @@ test.cb('POST /users - it should allow user-manager to create a new active user'
       t.is(res.body.data[0].attributes.status, 'ACTIVE');
       thirdUserId = res.body.data[0].id;
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('GET /users/:userId - it should allow user to view user profile', (t) => {
@@ -211,7 +211,7 @@ test.cb('GET /users/:userId - it should allow user to view user profile', (t) =>
     .then((res) => {
       t.truthy(_.isEqual(res.body.data[0].id, userId));
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('GET /users/:userId - it should not allow user to view other user\'s profile', (t) => {
@@ -231,7 +231,7 @@ test.cb('GET /users/:userId - it should allow admin to view user profile', (t) =
     .then((res) => {
       t.truthy(_.isEqual(res.body.data[0].id, userId));
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('GET /users/:userId - it should allow user-manager to view user profile', (t) => {
@@ -243,11 +243,15 @@ test.cb('GET /users/:userId - it should allow user-manager to view user profile'
     .then((res) => {
       t.truthy(_.isEqual(res.body.data[0].id, userId));
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('PUT /users/:userId - it should allow user to update user profile', (t) => {
-  const userUpdateMock = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
+  const createUserUpdateMock = () => {
+    const updateMockData = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
+    return _.isEmpty(updateMockData) ? createUserUpdateMock() : updateMockData;
+  };
+  const userUpdateMock = createUserUpdateMock();
   request
     .put(`/users/${userId}`)
     .set('Authorization', userToken)
@@ -258,11 +262,15 @@ test.cb('PUT /users/:userId - it should allow user to update user profile', (t) 
     .then((res) => {
       t.truthy(_.isEqual(_.pick(res.body.data[0].attributes, _.keys(userUpdateMock)), userUpdateMock));
       t.end();
-    });
+    }).catch(err => console.log(userUpdateMock, err));
 });
 
 test.cb('PUT /users/:userId - it should allow admin to update other user\'s profile', (t) => {
-  const userUpdateMock = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
+  const createUserUpdateMock = () => {
+    const updateMockData = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
+    return _.isEmpty(updateMockData) ? createUserUpdateMock() : updateMockData;
+  };
+  const userUpdateMock = createUserUpdateMock();
   request
     .put(`/users/${userId}`)
     .set('Authorization', adminToken)
@@ -273,11 +281,15 @@ test.cb('PUT /users/:userId - it should allow admin to update other user\'s prof
     .then((res) => {
       t.truthy(_.isEqual(_.pick(res.body.data[0].attributes, _.keys(userUpdateMock)), userUpdateMock));
       t.end();
-    });
+    }).catch(err => console.log(userUpdateMock, err));
 });
 
 test.cb('PUT /users/:userId - it should allow user-manager to update other user\'s profile', (t) => {
-  const userUpdateMock = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
+  const createUserUpdateMock = () => {
+    const updateMockData = _.omit(jsf(userSchema.updateSchema), ['email', 'password']);
+    return _.isEmpty(updateMockData) ? createUserUpdateMock() : updateMockData;
+  };
+  const userUpdateMock = createUserUpdateMock();
   request
     .put(`/users/${userId}`)
     .set('Authorization', umToken)
@@ -288,7 +300,7 @@ test.cb('PUT /users/:userId - it should allow user-manager to update other user\
     .then((res) => {
       t.truthy(_.isEqual(_.pick(res.body.data[0].attributes, _.keys(userUpdateMock)), userUpdateMock));
       t.end();
-    });
+    }).catch(err => console.log(userUpdateMock, err));
 });
 
 test.cb('PUT /users/:userId - it should not allow user to update other user\'s profile', (t) => {
@@ -303,7 +315,7 @@ test.cb('PUT /users/:userId - it should not allow user to update other user\'s p
 });
 
 test.cb('PUT /users/:userId/password - it should allow user to update user password', (t) => {
-  const newPassword = `${Number(Math.random() * 10000000000)}`
+  const newPassword = `${Number(Math.random() * 1000000000000)}`;
   const userUpdateMock = { old: userMock.password, new: newPassword };
   request
     .put(`/users/${userId}/password`)
@@ -316,7 +328,7 @@ test.cb('PUT /users/:userId/password - it should allow user to update user passw
       userMock.password = newPassword;
       t.truthy(_.isEqual(res.body.data[0].id, userId));
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('PUT /users/:userId/password - it should not allow user to update password with incorrect original password', (t) => {
@@ -354,7 +366,7 @@ test.cb('PUT /users/:userId/password - it should allow admin to update user pass
       userMock.password = userUpdateMock.new;
       t.truthy(_.isEqual(res.body.data[0].id, userId));
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('PUT /users/:userId/password - it should allow user-manager to update user password', (t) => {
@@ -370,7 +382,7 @@ test.cb('PUT /users/:userId/password - it should allow user-manager to update us
       userMock.password = userUpdateMock.new;
       t.truthy(_.isEqual(res.body.data[0].id, userId));
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('POST /auth/forgot-password - it should allow user initiate forgot password', (t) => {
@@ -429,6 +441,54 @@ test.cb('POST /auth/reset-password - it should throw error if payload is empty',
     .expect(400, t.end);
 });
 
+test.cb('PUT /users/:userId/roles - it should allow user-manager to update roles of users', (t) => {
+  request
+    .put(`/users/${userId}/roles`)
+    .set('Authorization', umToken)
+    .type('json')
+    .send({ roles: 'user-manager' })
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .then((res) => {
+      t.truthy(_.isEqual(res.body.data[0].attributes.roles, 'user-manager'));
+      t.end();
+    }).catch(err => console.log(err));
+});
+
+test.cb('PUT /users/:userId/roles - it should allow admin to update roles of users', (t) => {
+  request
+    .put(`/users/${userId}/roles`)
+    .set('Authorization', adminToken)
+    .type('json')
+    .send({ roles: 'user' })
+    .expect('Content-Type', /json/)
+    .expect(200)
+    .then((res) => {
+      t.truthy(_.isEqual(res.body.data[0].attributes.roles, 'user'));
+      t.end();
+    }).catch(err => console.log(err));
+});
+
+test.cb('PUT /users/:userId/roles - it should not allow to set non existing roles', (t) => {
+  request
+    .put(`/users/${userId}/roles`)
+    .set('Authorization', adminToken)
+    .type('json')
+    .send({ roles: '1234' })
+    .expect('Content-Type', /json/)
+    .expect(404, t.end);
+});
+
+test.cb('PUT /users/:userId/roles - it should not allow regular user to update roles', (t) => {
+  request
+    .put(`/users/${userId}/roles`)
+    .set('Authorization', userToken)
+    .type('json')
+    .send({ roles: 'user-manager' })
+    .expect('Content-Type', /json/)
+    .expect(401, t.end);
+});
+
 test.cb('GET /users - it should allow admin to list all users', (t) => {
   request
     .get('/users')
@@ -438,7 +498,7 @@ test.cb('GET /users - it should allow admin to list all users', (t) => {
     .then((res) => {
       t.truthy(res.body.data.length > 0);
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('GET /users - it should allow user-manager to list all users', (t) => {
@@ -450,7 +510,7 @@ test.cb('GET /users - it should allow user-manager to list all users', (t) => {
     .then((res) => {
       t.truthy(res.body.data.length > 0);
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('GET /users - it should allow to use pagination', (t) => {
@@ -463,7 +523,7 @@ test.cb('GET /users - it should allow to use pagination', (t) => {
     .then((res) => {
       t.truthy(res.body.data.length === 1);
       t.end();
-    });
+    }).catch(err => console.log(err));
 });
 
 test.cb('GET /users - it should allow admin to use filter', (t) => {

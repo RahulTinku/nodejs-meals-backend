@@ -31,6 +31,7 @@ class UserController {
     this.removeUser = this.removeUser.bind(this);
     this.populateParamsUserId = this.populateParamsUserId.bind(this);
     this.populateTokenUser = this.populateTokenUser.bind(this);
+    this.updateRoles = this.updateRoles.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.forgotPassword = this.forgotPassword.bind(this);
     this.resetPassword = this.resetPassword.bind(this);
@@ -168,6 +169,22 @@ class UserController {
   }
 
   /**
+   * Handles update role request for a user
+   *
+   * @param req
+   * @param res
+   * @param next
+   */
+  updateRoles(req, res, next) {
+    const body = _.cloneDeep(req.body);
+    validator.buildParams({ input: body, schema: this.jsonSchema.updateRolesSchema })
+      .then(input => validator.validate({ input, schema: this.jsonSchema.updateRolesSchema }))
+      .then(input => this.model.updateUser(req.userId._id, { roles: input.roles }))
+      .then(result => res.status(200).send(serializer.serialize(result, { type: 'users' })))
+      .catch(error => next(error));
+  }
+
+  /**
    * Handles forgot-password request.
    * Initiates a email to user's email with verification code to be used to reset password
    *
@@ -221,7 +238,7 @@ class UserController {
       .then(result => Promise.all[res.status(200).send(serializer.serialize()),
         mailer({to: result.email, userDetails: {
           firstName: result.firstName, password: newPassword }, template: 'resetPassword'})])
-      .catch(error => console.log(error));
+      .catch(error => next(error));
   }
 
   /**
@@ -246,9 +263,12 @@ class UserController {
    */
   populateParamsUserId(req, res, next) {
     this.model.getUser(req.params.userId).then((userData) => {
-      if (!userData) next(new exceptions.NotFound());
-      req.userId = userData;
-      next();
+      if (!userData) {
+        next(new exceptions.NotFound());
+      } else {
+        req.userId = userData;
+        next();
+      }
     }).catch(error => next(error));
   }
 
