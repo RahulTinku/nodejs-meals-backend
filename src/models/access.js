@@ -2,6 +2,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const exceptions = require('common/exceptions');
 
 class Access {
   /**
@@ -99,7 +100,7 @@ class Access {
   verifyToken(token) {
     return new Promise((resolve) => {
       resolve(jwt.verify(token, this.signature));
-    });
+    }).catch(error => new exceptions.UnAuthorized(error));
   }
 
   /**

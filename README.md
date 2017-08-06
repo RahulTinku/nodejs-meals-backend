@@ -19,5 +19,5 @@ A fresh installation of the project will usually involve the following steps:
 - Run ```yarn test```
 
 ### Documenting APIs
-API documentation is defined in the ```ApiDoc.raml``` file. This file will be used to generate the HTML documentation.
+API documentation is defined in the ```docs/raml/api.raml``` file. This file will be used to generate the HTML documentation.
 - Run ```yarn docs``` to generate html api documentation
