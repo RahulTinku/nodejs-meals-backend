@@ -31,7 +31,7 @@ const updateSchema = {
 
 const updatePasswordSchema = {
   type: 'object',
-  properties: { old: { type: 'string', minLength: 10 }, new: { type: 'string', minLength: 10 } },
+  properties: { old: { type: 'string', minLength: 8 }, new: { type: 'string', minLength: 8 } },
   required: ['old', 'new'],
   additionalProperties: false,
 };
